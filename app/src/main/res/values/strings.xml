@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Battleship</string>
+    <string name="battleship_title">Battleship</string>
+    <string name="enter_username">Username</string>
+    <string name="find_room">Find Room!</string>
+    <string name="settings">Settings</string>
+    <string name="quit">Quit</string>
+</resources>
