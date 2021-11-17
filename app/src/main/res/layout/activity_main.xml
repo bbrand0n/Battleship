@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="188dp"
         android:orientation="vertical"
@@ -43,7 +43,8 @@
     </LinearLayout>
 
 
-    <!--     BUTTONS     -->
+
+    <!--     GAME BUTTONS     -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,7 +52,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="152dp"
+        android:layout_marginBottom="230dp"
         app:cardBackgroundColor="#20FFFFFF"
         app:cardElevation="2dp"
         app:cardUseCompatPadding="true">
@@ -74,10 +75,10 @@
 
                 <EditText
                     android:id="@+id/nameIn"
-                    android:autofillHints="username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
+                    android:autofillHints="username"
                     android:hint="@string/enter_username"
                     android:inputType="text"
                     android:minHeight="48dp"
@@ -86,7 +87,30 @@
             </androidx.cardview.widget.CardView>
 
 
-            <!--     QUIT BUTTON     -->
+            <!---  CREATE GAME BUTTON   -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                app:cardBackgroundColor="@color/cardview_shadow_end_color"
+                app:cardCornerRadius="6dp">
+
+                <Button
+                    android:id="@+id/create_game"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/teal_700"
+                    android:fontFamily="@font/progress"
+                    android:text="@string/create_game"
+                    android:textColor="#000000"
+                    android:textSize="18sp" />
+
+            </androidx.cardview.widget.CardView>
+
+
+            <!--- FIND ROOM BUTTON     -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -105,7 +129,31 @@
                     android:text="@string/find_room"
                     android:textColor="#000000"
                     android:textSize="18sp" />
+
             </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <!--    SETTINGS AND QUIT BUTTONS     -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="30dp"
+        app:cardBackgroundColor="#20FFFFFF"
+        app:cardElevation="2dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical"
+            android:padding="10dp">
 
 
             <!--     SETTINGS BUTTON     -->
@@ -149,11 +197,8 @@
                     android:text="@string/quit"
                     android:textColor="#000000"
                     android:textSize="18sp" />
+
             </androidx.cardview.widget.CardView>
-
-
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
-
 </RelativeLayout>
