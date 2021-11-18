@@ -172,6 +172,7 @@
                     android:layout_gravity="center"
                     android:background="@color/teal_700"
                     android:fontFamily="@font/progress"
+                    android:onClick="settings"
                     android:text="@string/settings"
                     android:textColor="#000000"
                     android:textSize="18sp" />
@@ -194,6 +195,7 @@
                     android:layout_gravity="center"
                     android:background="@color/teal_700"
                     android:fontFamily="@font/progress"
+                    android:onClick="quit"
                     android:text="@string/quit"
                     android:textColor="#000000"
                     android:textSize="18sp" />
