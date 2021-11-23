@@ -51,12 +51,14 @@ public class NewGameActivity extends AppCompatActivity {
 
 
 
-
         // -------- GET DATABASE ---------
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         game = db.collection("games").document(player1);
 
 
+
+
+        // Add event listener
         game.addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -69,33 +71,8 @@ public class NewGameActivity extends AppCompatActivity {
                         game.update("player2", value.get("player2").toString());
                         p2.setText("Player 2:  " + player2);
                     }
-
                 }
-
             }
         });
-
-        // -------- UPDATE ACTIVITY WHEN NEW EVENT HAPPENS ----------
-//        db.collection("games")
-//                .whereEqualTo("player1", player1)
-//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-//
-//
-//
-//                        for(QueryDocumentSnapshot doc : value){
-//                            //game.set(value.getDocuments().get(0).getData());
-//                            game.update(doc.getData());
-//                            p1.setText("Player 1:  " + player1);
-//                            p2.setText("Player 2:  " + player2);
-//                        }
-//                    }
-//                });
-
-
-
     }
-
-
 }

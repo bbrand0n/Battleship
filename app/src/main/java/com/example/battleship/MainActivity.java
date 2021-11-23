@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity{
     // Username input and button to submit
     EditText nameIn;
     String uName, otherName;
-    Button find_room, create_game, settings;
+    Button find_room, create_game, settings, quit;
     DocumentReference player1, player2, newGame;
 
 
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity{
         find_room =    (Button) findViewById(R.id.find_room);
         create_game =  (Button) findViewById(R.id.create_game);
         settings =     (Button) findViewById(R.id.settings);
-        Button quit =  (Button) findViewById(R.id.quit);
+        quit =         (Button) findViewById(R.id.quit);
 
 
 
@@ -107,24 +107,26 @@ public class MainActivity extends AppCompatActivity{
         create_game.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 // Extract string
                 uName = nameIn.getText().toString();
 
+
                 // Create new player object
                 Player p = new Player(uName);
-
-
                 // Add player to database
                 player1 = addUser(p, db);
 
 
+                // Create new game object
+                Game game = new Game(p);
                 // Create new game
-                newGame = createGame(player1, db);
+                newGame = createGame(player1, game,  db);
 
 
                 // Launch activity
-                Intent i = new Intent(MainActivity.this, NewGameActivity.class);
-                i.putExtra("p1name", p.getName());
+                Intent i = new Intent(getApplicationContext(), NewGameActivity.class);
+                i.putExtra("p1name", player1.getId());
                 i.putExtra("p2name", "Joining...");
                 startActivity(i);
             }
@@ -143,24 +145,23 @@ public class MainActivity extends AppCompatActivity{
                 // Extract string
                 uName = nameIn.getText().toString();
 
+
                 // Create new player object
                 Player p = new Player(uName);
-
                 // Add player to database
-                DocumentReference player2 = addUser(p, db);
+                player2 = addUser(p, db);
 
-                // Display alert box to get other username --------
+
+                // Display alert box to get other username
                 AlertDialog.Builder builder = new AlertDialog
                         .Builder(MainActivity.this,
                         R.style.Base_Theme_AppCompat_Dialog_Alert);
                 builder.setTitle("Join Game");
                 builder.setMessage("Enter opponents username");
-
                 // Make the view
                 final EditText input = new EditText(MainActivity.this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 builder.setView(input);
-
                 // FIND button
                 builder.setPositiveButton("Find", new DialogInterface.OnClickListener() {
                     @Override
@@ -168,15 +169,14 @@ public class MainActivity extends AppCompatActivity{
                         otherName = input.getText().toString();
                         dialog.cancel();
                         joinGame(otherName, player2, db);
-                    }
-                });
+                    }});
                 // CANCEL button
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
-                    }
-                });
+                    }});
+
 
                 // Show alert dialogue
                 builder.show();
@@ -211,68 +211,34 @@ public class MainActivity extends AppCompatActivity{
     }
 
     // --------- CREATE GAME -----------
-    public DocumentReference createGame(DocumentReference player1, FirebaseFirestore db) {
+    public DocumentReference createGame(DocumentReference player1, Game game,  FirebaseFirestore db) {
 
         // Create game map
-        Map<String, Object> game = new HashMap<>();
-        game.put("created", new Timestamp(new Date()));
-        game.put("isOpen", true);
-        game.put("player1", player1.getId());
+        Map<String, Object> newGame = new HashMap<>();
+        newGame.put("created", game.getCreated());
+        newGame.put("isOpen", game.getOpen());
+        newGame.put("player1", game.getPlayer1().getName());  // TODO: change to string ??
+        newGame.put("player2", game.getPlayer2());
+        newGame.put("winner", game.getWinner());
 
 
         // Add to database
         db.collection("games")
                 .document(player1.getId())
-                    .set(game);
+                    .set(newGame);
 
 
         // Reference to game
-        DocumentReference newGame =  db.collection("games")
+        DocumentReference newGameDoc =  db.collection("games")
                                     .document(player1.getId());
 
 
 
         // Return game reference
-        return newGame;
+        return newGameDoc;
 
     }
 
-
-    // -------- SETTINGS ---------
-    public void settings(View v){
-        Intent i = new Intent(MainActivity.this, TestActivity.class);
-        startActivity(i);
-        // TODO: fix
-    }
-
-
-    // -------- QUIT ------------
-    public void quit(View v){
-        finish();
-        System.exit(0);
-    }
-
-
-
-
-    public DocumentReference addUser(Player player, FirebaseFirestore db) {
-
-        // Create the player
-        Map<String, Object> user = new HashMap<>();
-        user.put("name", player.getName());
-        user.put("shotsFired", player.getShots());
-        user.put("shotsHit", player.getHits());
-
-        // Add player to database
-        db.collection("players")
-                .document(player.getName())
-                    .set(user);
-
-        // Return player
-        return db.collection("players")
-                .document(player.getName());
-
-    }
 
 
 
@@ -282,6 +248,7 @@ public class MainActivity extends AppCompatActivity{
         player1 = db.collection("games").document(player1name);
 
         // Create query to find the game
+        //DocumentReference game;
 //        Query q = db.collection("games").whereEqualTo("player1", player1name);
 //        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 //            @Override
@@ -305,7 +272,7 @@ public class MainActivity extends AppCompatActivity{
         game.update("isOpen", false);
         game.update("player2", player2.getId());
 
-        Intent i = new Intent(MainActivity.this, NewGameActivity.class);
+        Intent i = new Intent(getApplicationContext(), NewGameActivity.class);
         i.putExtra("p2name", player2.getId());
         i.putExtra("p1name", player1.getId());
         startActivity(i);
@@ -314,6 +281,52 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+
+    public DocumentReference addUser(Player player, FirebaseFirestore db) {
+
+        // Create the player
+        Map<String, Object> user = new HashMap<>();
+        user.put("name", player.getName());
+        user.put("shotsFired", player.getShots());
+        user.put("shotsHit", player.getHits());
+
+        // Add player to database
+        db.collection("players")
+                .document(player.getName())
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("ADDED", "Player added! " + player.getName());
+                    }})
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("ADDED", "Error adding player");
+                    }});
+
+        // Add document reference to player object
+        return player.setDocRef(db.collection("players")
+                .document(player.getName()));
+
+
+    }
+
+
+
+    // -------- SETTINGS ---------
+    public void settings(View v){
+        Intent i = new Intent(MainActivity.this, TestActivity.class);
+        startActivity(i);
+        // TODO: fix
+    }
+
+
+    // -------- QUIT ------------
+    public void quit(View v){
+        finish();
+        System.exit(0);
+    }
 
 
 }
