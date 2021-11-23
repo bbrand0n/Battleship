@@ -45,14 +45,18 @@
 
 
     <!--     GAME BUTTONS     -->
+
+
+    <!--    SETTINGS AND QUIT BUTTONS     -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="230dp"
+        android:layout_marginBottom="300dp"
         app:cardBackgroundColor="#20FFFFFF"
         app:cardElevation="2dp"
         app:cardUseCompatPadding="true">
@@ -87,29 +91,6 @@
             </androidx.cardview.widget.CardView>
 
 
-            <!---  CREATE GAME BUTTON   -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"
-                app:cardBackgroundColor="@color/cardview_shadow_end_color"
-                app:cardCornerRadius="6dp">
-
-                <Button
-                    android:id="@+id/create_game"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/teal_700"
-                    android:fontFamily="@font/progress"
-                    android:text="@string/create_game"
-                    android:textColor="#000000"
-                    android:textSize="18sp" />
-
-            </androidx.cardview.widget.CardView>
-
-
             <!--- FIND ROOM BUTTON     -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -134,8 +115,6 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-
-    <!--    SETTINGS AND QUIT BUTTONS     -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -143,7 +122,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
         app:cardBackgroundColor="#20FFFFFF"
         app:cardElevation="2dp"
         app:cardUseCompatPadding="true">

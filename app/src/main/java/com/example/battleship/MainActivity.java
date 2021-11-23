@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.nfc.Tag;
@@ -28,8 +29,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -53,12 +57,13 @@ public class MainActivity extends AppCompatActivity{
 
     // Username input and button to submit
     EditText nameIn;
-    String uName, otherName;
+    String uName = "";
     Button find_room, create_game, settings, quit;
-    DocumentReference player1, player2, newGame;
+    DatabaseReference player, mDb;
+    FirebaseDatabase database;
 
 
-
+    // Start App
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -68,7 +73,9 @@ public class MainActivity extends AppCompatActivity{
 
 
         // -------- GET DATABASE ---------
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //FirebaseFirestore db = FirebaseFirestore.getInstance();
+        database = FirebaseDatabase.getInstance();
+        mDb = database.getReference();
 
 
         // --------- VIDEO STUFF-----------
@@ -90,231 +97,72 @@ public class MainActivity extends AppCompatActivity{
 
 
 
-        // --------- INPUT USERNAME -----------
-        // Get username
+        // --------- GET BUTTONS -----------
         nameIn =       (EditText) findViewById(R.id.nameIn);
         find_room =    (Button) findViewById(R.id.find_room);
-        create_game =  (Button) findViewById(R.id.create_game);
         settings =     (Button) findViewById(R.id.settings);
         quit =         (Button) findViewById(R.id.quit);
 
 
 
 
-
-        // -----------  CREATE GAME  ------------
-        // Create Game button
-        create_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // Extract string
-                uName = nameIn.getText().toString();
-
-
-                // Create new player object
-                Player p = new Player(uName);
-                // Add player to database
-                player1 = addUser(p, db);
-
-
-                // Create new game object
-                Game game = new Game(p);
-                // Create new game
-                newGame = createGame(player1, game,  db);
-
-
-                // Launch activity
-                Intent i = new Intent(getApplicationContext(), NewGameActivity.class);
-                i.putExtra("p1name", player1.getId());
-                i.putExtra("p2name", "Joining...");
-                startActivity(i);
-            }
-        });
-
-
-
-
-
-        // -----------  FIND ROOM  -------------
-        // Find Room button
+        // ---------- GET ROOM LIST ------------
         find_room.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // Extract string
+                // Retrieve name from EditText
                 uName = nameIn.getText().toString();
+                find_room.setText("Finding Room...");
+                find_room.setEnabled(false);
 
+                // Create player object
+                Player pObj = new Player(uName);
+                Map<String, Object> p = new HashMap<>();
+                p.put("name",       pObj.getName());
+                p.put("shotsFired", pObj.getShots());
+                p.put("shotsHit",   pObj.getHits());
 
-                // Create new player object
-                Player p = new Player(uName);
-                // Add player to database
-                player2 = addUser(p, db);
-
-
-                // Display alert box to get other username
-                AlertDialog.Builder builder = new AlertDialog
-                        .Builder(MainActivity.this,
-                        R.style.Base_Theme_AppCompat_Dialog_Alert);
-                builder.setTitle("Join Game");
-                builder.setMessage("Enter opponents username");
-                // Make the view
-                final EditText input = new EditText(MainActivity.this);
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
-                // FIND button
-                builder.setPositiveButton("Find", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        otherName = input.getText().toString();
-                        dialog.cancel();
-                        joinGame(otherName, player2, db);
-                    }});
-                // CANCEL button
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }});
-
-
-                // Show alert dialogue
-                builder.show();
-
-            }});
-
-
-//        db.collection("games")
-//                .whereEqualTo("isOpen", true)
-//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-//                        for(QueryDocumentSnapshot doc : value){
-//
-//                            value.getDocuments().get(0).getReference().set(doc);
-//
-//                            // Launch activity
-//                            Intent i = new Intent(MainActivity.this, NewGameActivity.class);
-//                            i.putExtra("p1name", doc.get(String.valueOf(player1)).toString());
-//                            i.putExtra("p2name", doc.get(String.valueOf(player2)).toString());
-//                            startActivity(i);
-//                        }
-//
-//                    }
-//                });
-
-
-
-
-
-
-    }
-
-    // --------- CREATE GAME -----------
-    public DocumentReference createGame(DocumentReference player1, Game game,  FirebaseFirestore db) {
-
-        // Create game map
-        Map<String, Object> newGame = new HashMap<>();
-        newGame.put("created", game.getCreated());
-        newGame.put("isOpen", game.getOpen());
-        newGame.put("player1", game.getPlayer1().getName());  // TODO: change to string ??
-        newGame.put("player2", game.getPlayer2());
-        newGame.put("winner", game.getWinner());
-
-
-        // Add to database
-        db.collection("games")
-                .document(player1.getId())
-                    .set(newGame);
-
-
-        // Reference to game
-        DocumentReference newGameDoc =  db.collection("games")
-                                    .document(player1.getId());
-
-
-
-        // Return game reference
-        return newGameDoc;
-
+                // Add to database
+                mDb.child("players").child(uName).updateChildren(p);
+                player = database.getReference("players/" + uName);
+                addEventListener();
+            }
+        });
     }
 
 
+    // --------- LISTENS TO CHANGES IN DATABASE --------------
+    private void addEventListener() {
 
+        // Read player from database
+        player.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-    public void joinGame(String player1name, DocumentReference player2, FirebaseFirestore db) {
+                // Found
+                if(!player.equals("")) {
 
-        //
-        player1 = db.collection("games").document(player1name);
+                    // Launch new activity
+                    Intent i = new Intent(getApplicationContext(), Rooms.class);
+                    i.putExtra("name", player.getKey());
+                    startActivity(i);
+                    finish();
+                }
+            }
 
-        // Create query to find the game
-        //DocumentReference game;
-//        Query q = db.collection("games").whereEqualTo("player1", player1name);
-//        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if(task.isSuccessful()) {
-//                    Log.d("GREAT", "Joined game successfully: "
-//                            + task.getResult().getDocuments().get(0));
-//                }
-//                else {
-//                    Log.d("BAD", "Unable to find player");
-//                    // TODO: go back to main menu
-//                }
-//            }
-//        });
-
-        // Get reference to game
-        //DocumentReference game = q.get().getResult().getDocuments().get(0).getReference();
-        DocumentReference game = db.collection("games").document(player1name);
-
-        // Update fields
-        game.update("isOpen", false);
-        game.update("player2", player2.getId());
-
-        Intent i = new Intent(getApplicationContext(), NewGameActivity.class);
-        i.putExtra("p2name", player2.getId());
-        i.putExtra("p1name", player1.getId());
-        startActivity(i);
-
-
-
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Error
+                find_room.setText("Find Room");
+                find_room.setEnabled(true);
+                Toast.makeText(MainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
-    public DocumentReference addUser(Player player, FirebaseFirestore db) {
-
-        // Create the player
-        Map<String, Object> user = new HashMap<>();
-        user.put("name", player.getName());
-        user.put("shotsFired", player.getShots());
-        user.put("shotsHit", player.getHits());
-
-        // Add player to database
-        db.collection("players")
-                .document(player.getName())
-                .set(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d("ADDED", "Player added! " + player.getName());
-                    }})
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("ADDED", "Error adding player");
-                    }});
-
-        // Add document reference to player object
-        return player.setDocRef(db.collection("players")
-                .document(player.getName()));
-
-
-    }
-
-
-
-    // -------- SETTINGS ---------
+    // -------- OPEN SETTINGS ---------
     public void settings(View v){
         Intent i = new Intent(MainActivity.this, TestActivity.class);
         startActivity(i);
@@ -322,7 +170,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-    // -------- QUIT ------------
+    // -------- QUIT GAME ------------
     public void quit(View v){
         finish();
         System.exit(0);

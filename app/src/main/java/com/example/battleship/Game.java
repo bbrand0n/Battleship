@@ -7,33 +7,28 @@ import java.util.Date;
 
 public class Game {
 
-    public Player player1;
-    public Player player2;
-    public Timestamp created;
+    public String player1;
+    public String player2;
     public Boolean isOpen;
-    public Player winner;
+    public String winner;
 
     public Game() {
-
         this.player1 = null;
         this.player2 = null;
-        this.created = new Timestamp(new Date());
         this.isOpen = true;
         this.winner = null;
     }
 
-    public Game(Player player1) {
+    public Game(String player1) {
 
         this.player1 = player1;
-        this.player2 = null;
-        this.created = new Timestamp(new Date());
+        this.player2 = "";
         this.isOpen = true;
-        this.winner = null;
+        this.winner = "";
     }
 
-    public Player    getPlayer1()      { return this.player1; }
-    public Player    getPlayer2()      { return this.player2; }
-    public Timestamp getCreated()      { return this.created; }
+    public String    getPlayer1()      { return this.player1; }
+    public String    getPlayer2()      { return this.player2; }
     public Boolean   getOpen()         { return this.isOpen; }
-    public Player    getWinner()       { return this.winner; }
+    public String    getWinner()       { return this.winner; }
 }
