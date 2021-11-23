@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "460078934195",
+    "firebase_url": "https://cop4331-battleship-default-rtdb.firebaseio.com",
+    "project_id": "cop4331-battleship",
+    "storage_bucket": "cop4331-battleship.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:460078934195:android:d95d752998c076f87c28c6",
+        "android_client_info": {
+          "package_name": "com.example.battleship"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "460078934195-j1m5fp57mg5ltg6t85dgerdb15qv56kp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6y4aFc0b2j0RIx27H1QDhXEMgnsFHMEc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "460078934195-j1m5fp57mg5ltg6t85dgerdb15qv56kp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
