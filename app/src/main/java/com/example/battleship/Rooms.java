@@ -1,18 +1,16 @@
 package com.example.battleship;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -98,7 +96,7 @@ public class Rooms extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Join existing room
                 roomName = roomsList.get(position);
-                roomRef = database.getReference("rooms/" + roomName);
+                roomRef = database.getReference("rooms/" + roomName );
                 addRoomEventListener();
                 roomRef.child("player2").setValue(playerName);
             }
@@ -137,15 +135,29 @@ public class Rooms extends AppCompatActivity {
         roomsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 // Show list of available rooms
                 roomsList.clear();
                 Iterable<DataSnapshot> rooms = dataSnapshot.getChildren();
-                for(DataSnapshot snapshot : rooms) {
-                    roomsList.add(snapshot.getKey());
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(Rooms.this,
-                            android.R.layout.simple_list_item_1, roomsList);
-                    listView.setAdapter(adapter);
+
+                // Iterate through available rooms
+                for(DataSnapshot snapshot : rooms) {
+
+                    // Only show games that are open
+                    if(snapshot.child("isOpen").getValue(Boolean.class) == true) {
+
+                        // Add room to list if open
+                        roomsList.add(snapshot.getKey());
+
+                        // Show on activity
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(Rooms.this,
+                                android.R.layout.simple_list_item_1, roomsList);
+                        listView.setAdapter(adapter);
+
+                    }
+
+
                 }
             }
 
