@@ -33,7 +33,7 @@ public class Rooms extends AppCompatActivity {
     Game newGame;
     List<String> roomsList;
     String playerName = "";
-    String roomName = "";
+    String roomName = "1";
     FirebaseDatabase database;
     DatabaseReference mDb, roomRef, player1;
     DatabaseReference roomsRef;
@@ -117,6 +117,7 @@ public class Rooms extends AppCompatActivity {
                 createRoom.setEnabled(true);
                 Intent i = new Intent(getApplicationContext(), NewGameActivity.class);
                 i.putExtra("playerName", playerName);
+                i.putExtra("roomName",   roomName);
                 startActivity(i);
             }
 

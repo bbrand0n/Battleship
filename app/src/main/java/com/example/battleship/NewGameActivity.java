@@ -50,30 +50,34 @@ public class NewGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_game);
 
+
         // --------- GET REFERENCE TO DATABASE ---------
         database = FirebaseDatabase.getInstance();
         roomRef = database.getReference();
 
 
+
         // -------- RETRIEVE NAMES --------
         Intent i = getIntent();
-        player1  = i.getStringExtra("playerName");
-        player2  = roomRef.child("rooms/" + player1).child("player2").toString();
-        roomRef = roomRef.child("rooms/" + player1);
-
-
-
-        // -------- SET HOST ----------
-        if(roomName.equals(playerName)) { role = "host";  }
-        else                            { role = "guest"; }
+        playerName  = i.getStringExtra("playerName");
+        roomName    = i.getStringExtra("roomName");
+        roomRef  = roomRef.child("rooms/" + roomName);
 
 
         addRoomEventListener();
 
 
-        // -------- DISPLAY INFO -----------
+        // -------- SET HOST ----------
+        if(roomName.equals(playerName)) { role = "host";  }
+        else                            { role = "guest";  player2 = playerName; }
+
+
+        // -------- GET VIEWS -----------
         p1 = (TextView) findViewById(R.id.p1);
         p2 = (TextView) findViewById(R.id.p2);
+        p1.setText(roomName);
+
+
 
 
 
@@ -87,8 +91,11 @@ public class NewGameActivity extends AppCompatActivity {
                 // Show players
                 Iterable<DataSnapshot> players = dataSnapshot.getChildren();
                 for(DataSnapshot snapshot : players) {
-                    //p1.setText(player1);
-                    //p2.setText(player2);
+
+                    if(!player2.equals("")) {
+                        p1.setText(player1);
+                        p2.setText(player2);
+                    }
                 }
             }
 
