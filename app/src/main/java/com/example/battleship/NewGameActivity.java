@@ -14,18 +14,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class NewGameActivity extends AppCompatActivity {
 
+    // Local variables and views
     Button ready;
     TextView p1, p2;
     String player1 = "", player2 = "", playerName = "";
     String roomName = "", role = "";
     String message ="";
-    List<String> playerslist;
 
+    // Databse stuff
     FirebaseDatabase database;
     DatabaseReference roomRef, messageRef;
 
@@ -48,7 +46,7 @@ public class NewGameActivity extends AppCompatActivity {
         playerName  = i.getStringExtra("playerName");
         roomName    = i.getStringExtra("roomName");
         roomRef     = database.getReference("rooms/" + roomName);
-        playerslist = new ArrayList<>();
+
 
 
         // ------------ ADD LISTENER -------------
