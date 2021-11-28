@@ -3,6 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/silea/AndroidStudioProjects/Battleship/app/src/main/res/layout/activity_game_play.xml" value="0.33" />
+        <entry key="..\:/Users/silea/AndroidStudioProjects/Battleship/app/src/main/res/layout/activity_main.xml" value="0.36367753623188404" />
+        <entry key="..\:/Users/silea/AndroidStudioProjects/Battleship/app/src/main/res/layout/activity_new_game.xml" value="0.33" />
+        <entry key="..\:/Users/silea/AndroidStudioProjects/Battleship/app/src/main/res/layout/activity_rooms.xml" value="0.36367753623188404" />
+        <entry key="..\:/Users/silea/AndroidStudioProjects/Battleship/app/src/main/res/layout/activity_test.xml" value="0.36367753623188404" />
         <entry key="app/src/main/res/layout-port/home_video.xml" value="0.1466565349544073" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_new_game.xml" value="0.335" />
