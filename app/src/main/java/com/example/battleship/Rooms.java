@@ -87,9 +87,11 @@ public class Rooms extends AppCompatActivity {
                 roomRef = database.getReference("rooms/" + roomName + "/player1");
                 addRoomEventListener();
                 roomRef.setValue(playerName);
+                System.out.println("______________________________________________________________________________________________________");
+                System.out.println(mDb.child("rooms").child(playerName).get());
+                System.out.println("______________________________________________________________________________________________________");
             }
         });
-
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

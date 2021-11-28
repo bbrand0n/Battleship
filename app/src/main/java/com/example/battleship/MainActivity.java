@@ -127,10 +127,14 @@ public class MainActivity extends AppCompatActivity{
                 mDb.child("players").child(uName).updateChildren(p);
                 player = database.getReference("players/" + uName);
                 addEventListener();
+
+                System.out.println("______________________________________________________________________________________________________");
+                System.out.println(pObj.getName());
+                System.out.println(mDb.child("rooms").child(pObj.getName()).getKey());
+                System.out.println("______________________________________________________________________________________________________");
             }
         });
     }
-
 
     // --------- LISTENS TO CHANGES IN DATABASE --------------
     private void addEventListener() {
