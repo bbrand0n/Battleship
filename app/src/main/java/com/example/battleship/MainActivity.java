@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity{
     Button find_room, create_game, settings, quit;
     DatabaseReference player, mDb;
     FirebaseDatabase database;
-
+    public static Player pObj = new Player("");
 
     // Start App
     @Override
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity{
                 find_room.setEnabled(false);
 
                 // Create player object
-                Player pObj = new Player(uName);
+                pObj = new Player(uName);
                 Map<String, Object> p = new HashMap<>();
                 p.put("name",       pObj.getName());
                 p.put("shotsFired", pObj.getShots());

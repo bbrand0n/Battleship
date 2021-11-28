@@ -16,10 +16,9 @@ public class BoardView extends View {
 
     //000000000000000000000000000000000000000000000000000000000000000000000000000
     private final Paint paintMarker = new Paint();
-    private int[] paintRow = new int[1000];
-    private int[] paintCol = new int[1000];
-    private boolean[] paintHit = new boolean[1000];
-    private int paintRCUsed = -1;
+    private int[][] paintBoard = new int[10][10];
+    private int paintHit = 1;
+    private int paintMiss = 0;
     //000000000000000000000000000000000000000000000000000000000000000000000000000
 
     //custom view for board based off tutorial
@@ -67,10 +66,10 @@ public class BoardView extends View {
     }
     //000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     private void initRC(){
-        for (int i = 0; i < 1000; i++){
-            paintRow[i] = -1;
-            paintCol[i] = -1;
-            paintHit[i] = false;
+        for (int i = 0; i < 10; i++){
+            for (int j = 0; j < 10; j++){
+                paintBoard[i][j] = -1;
+            }
         }
     }
     //000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -256,24 +255,32 @@ public class BoardView extends View {
         if(action == MotionEvent.ACTION_DOWN){
             int row = (int)Math.ceil(y/w);
             int col = (int)Math.ceil(x/w);
+            if ((row < 1) || (row > 10)){return false;}
+            if ((col < 1) || (col > 10)){return false;}
+
+            MainActivity.pObj.shotsFired++;
 
             System.out.println("click: " + row + "," + col + " width: " + w);
-
-            paintRCUsed++;
 
             for (int i = 0; i < NewGameActivity.spX.size(); i++)
             {
                 int bx = NewGameActivity.spX.get(i);
                 int by = NewGameActivity.spY.get(i);
 
-                if ((bx == col - 1) && (by == row - 1)){
-                    paintHit[paintRCUsed] = true;
+                if (((bx == col - 1) && (by == row - 1)) && ((paintBoard[row - 1][col - 1]) == -1)){
+                    paintBoard[row - 1][col - 1] = paintHit;
+                    MainActivity.pObj.shotsHit++;
+
+                    if (MainActivity.pObj.shotsHit >= 17){
+                        System.out.println("!!!!!!!!!Player wins!!!!!!!!");
+                    }
                     break;
                 }
             }
-
-            paintRow[paintRCUsed] = row - 1;
-            paintCol[paintRCUsed] = col - 1;
+            if (paintBoard[row - 1][col - 1] != paintHit)
+            {
+                paintBoard[row - 1][col - 1] = paintMiss;
+            }
             invalidate();
 
             return true;
@@ -282,12 +289,15 @@ public class BoardView extends View {
     }
 
     private void drawMarkers(Canvas canvas){
-        for ( int i = 0; i < 1000; i++){
-            if (paintRow[i] > -1) {
-                if (paintHit[i]){
-                    drawHit(canvas, paintRow[i], paintCol[i]);
+        for ( int i = 0; i < 10; i++){
+            for ( int j = 0; j < 10; j++) {
+                if (paintBoard[i][j] > -1) {
+                    if (paintBoard[i][j] == paintHit) {
+                        drawHit(canvas, i, j);
+                    } else {
+                        drawMiss(canvas, i, j);
+                    }
                 }
-                else{drawMiss(canvas, paintRow[i], paintCol[i]);}
             }
         }
     }
