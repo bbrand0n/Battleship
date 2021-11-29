@@ -89,7 +89,7 @@ public class BoardView extends View {
         //000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         if( event.getAction() == MotionEvent.ACTION_DOWN){
             System.out.println(event.getX() + " " + event.getY());
-            return onTouchEvent2(event);
+            return onTouchEvent2( event);
         }
         //000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         switch (event.getAction()) {
@@ -251,7 +251,7 @@ public class BoardView extends View {
         int action = event.getAction();
 
         int w = (this.getWidth()/10);
-        System.out.println("board size : " + NewGameActivity.spX.size());
+        System.out.println("board size : " + gamePlay.spX.size());
 
         if(action == MotionEvent.ACTION_DOWN){
             int row = (int)Math.ceil(y/w);
@@ -263,10 +263,10 @@ public class BoardView extends View {
 
             System.out.println("click: " + row + "," + col + " width: " + w);
 
-            for (int i = 0; i < NewGameActivity.spX.size(); i++)
+            for (int i = 0; i < gamePlay.spX.size(); i++)
             {
-                int bx = NewGameActivity.spX.get(i);
-                int by = NewGameActivity.spY.get(i);
+                int bx = gamePlay.spX.get(i);
+                int by = gamePlay.spY.get(i);
 
                 if (((bx == col - 1) && (by == row - 1)) && ((paintBoard[row - 1][col - 1]) == -1)){
                     paintBoard[row - 1][col - 1] = paintHit;

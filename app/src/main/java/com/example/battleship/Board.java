@@ -100,16 +100,16 @@ public class Board implements Parcelable {
 
         for (int i = 0; i < sp.size(); i++)
         {
-            NewGameActivity.spX.add(new Integer(sp.get(i).getX()));
-            NewGameActivity.spY.add(new Integer(sp.get(i).getY()));
+            gamePlay.spX.add(new Integer(sp.get(i).getX()));
+            gamePlay.spY.add(new Integer(sp.get(i).getY()));
             System.out.println(sp.get(i).getX() + " "
                     + sp.get(i).getY() + " "
                     + sp.get(i).isHit() + " "
                     + sp.get(i).getShip().getName() + " ");
         }
         System.out.println("__________________");
-        for (int i = 0; i < NewGameActivity.spX.size(); i++) {
-            System.out.println(NewGameActivity.spX.get(i) + " " + NewGameActivity.spY.get(i));
+        for (int i = 0; i < gamePlay.spX.size(); i++) {
+            System.out.println(gamePlay.spX.get(i) + " " + gamePlay.spY.get(i));
         }
         // 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 
@@ -123,14 +123,14 @@ public class Board implements Parcelable {
                 if(board[i][j].hasShip(ship)){
 
                     // 000000000000000000000000000000000000000000000000000000000000000000000000
-                    for (int k = 0; k < NewGameActivity.spX.size(); k++)
+                    for (int k = 0; k < gamePlay.spX.size(); k++)
                     {
-                        int bx = NewGameActivity.spX.get(k);
-                        int by = NewGameActivity.spY.get(k);
+                        int bx = gamePlay.spX.get(k);
+                        int by = gamePlay.spY.get(k);
 
                         if ((bx == j) && (by == i)){
-                            NewGameActivity.spX.remove(k);
-                            NewGameActivity.spY.remove(k);
+                            gamePlay.spX.remove(k);
+                            gamePlay.spY.remove(k);
                             break;
                         }
                     }
@@ -153,7 +153,8 @@ public class Board implements Parcelable {
     }
 
     //hits coordinate given by player
-    boolean hit(Location placeToHit){
+    boolean hit(int x, int y){
+        Location placeToHit = new Location(x, y);
         if(placeToHit == null){
             return false;
         }

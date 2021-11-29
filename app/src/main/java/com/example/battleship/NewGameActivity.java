@@ -37,7 +37,7 @@ public class NewGameActivity extends AppCompatActivity {
     final private int PLAYER1_TURN = 1;
     final private int PLAYER2_TURN = 2;
     private BoardView boardView;
-    private Board playerBoard;
+    public static Board playerBoard, player1Board, player2Board;
     private ShipView shipBeingDragged = null;
     private List<ShipView> fleetView = new LinkedList<>();
     private Button shipsPlaced;
@@ -45,7 +45,7 @@ public class NewGameActivity extends AppCompatActivity {
     private Board opponentBoard = null;
     public static boolean donePlacingShips = false;
     private int turn = 0;
-    ValueEventListener listener;
+    ValueEventListener boardListener, roomListener;
     Player player1 = new Player(), player2 = new Player(), player;
     String roomName = "";
     Game game;
@@ -138,6 +138,7 @@ public class NewGameActivity extends AppCompatActivity {
 
                     playerRef = database.getReference("rooms/" + roomName );
                     addBoardListener();
+                    player2Board = playerBoard;
                     game.player1.setBoard(playerBoard);
                     game.player1.setReady(true);
                     Map<String, Object> p1 = new HashMap<>();
@@ -151,6 +152,7 @@ public class NewGameActivity extends AppCompatActivity {
 
                     playerRef = database.getReference("rooms/" + roomName );
                     addBoardListener();
+                    player2Board = playerBoard;
                     game.player2.setBoard(playerBoard);
                     game.player2.setReady(true);
                     Map<String, Object> p2 = new HashMap<>();
@@ -170,24 +172,19 @@ public class NewGameActivity extends AppCompatActivity {
 
     public void addBoardListener() {
 
-        playerRef.addValueEventListener(listener = new ValueEventListener() {
+        playerRef.addValueEventListener(boardListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 // If both players are ready, start game
                 if(snapshot.child("player2").child("ready").getValue(Boolean.class).equals(true) &&
                         snapshot.child("player1").child("ready").getValue(Boolean.class).equals(true)) {
+
                     // Create intent
                     donePlacingShips = true;
                     Intent i = new Intent(getApplicationContext(), gamePlay.class);
-                    i.putExtra("game", game);
                     i.putExtra("player", player);
-                    Bundle bundle = new Bundle();
-                    //bundle.putParcelableArrayList("spX", spX);
-                    //bundle.putParcelableArrayList("spY", spY);
-
-
-
+                    i.putExtra("board", playerBoard);
                     i.putExtra("roomName", roomName);
                     startActivity(i);
                 }
@@ -207,7 +204,7 @@ public class NewGameActivity extends AppCompatActivity {
     public void addRoomListener() {
 
         roomRef = database.getReference("rooms/" + roomName );
-        roomRef.addValueEventListener(new ValueEventListener() {
+        roomRef.addValueEventListener(roomListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -470,7 +467,8 @@ public class NewGameActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        roomRef.removeEventListener(listener);
+        roomRef.removeEventListener(boardListener);
+        roomRef.removeEventListener(roomListener);
     }
 
     //trying to scale image
