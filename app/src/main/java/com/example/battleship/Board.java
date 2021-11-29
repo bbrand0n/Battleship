@@ -1,16 +1,17 @@
 package com.example.battleship;
 
-import android.view.MotionEvent;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Board implements Serializable {
+public class Board implements Parcelable {
 
-    private final int size;
+    public int size;
     private Location[][] board = null;
+    //public List<Location>sp;
 
     //where ship has been shot
     private int placesShot = 0;
@@ -24,6 +25,24 @@ public class Board implements Serializable {
         board = new Location[size()][size()];
         createBoard(board);
     }
+
+
+    protected Board(Parcel in) {
+        size = in.readInt();
+        placesShot = in.readInt();
+    }
+
+    public static final Creator<Board> CREATOR = new Creator<Board>() {
+        @Override
+        public Board createFromParcel(Parcel in) {
+            return new Board(in);
+        }
+
+        @Override
+        public Board[] newArray(int size) {
+            return new Board[size];
+        }
+    };
 
     //create board and initialize array
     private void createBoard(Location[][] board){
@@ -243,5 +262,17 @@ public class Board implements Serializable {
         }
 
         return boardString;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(size);
+        dest.writeInt(placesShot);
     }
 }

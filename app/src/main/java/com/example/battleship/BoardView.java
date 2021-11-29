@@ -1,7 +1,6 @@
 package com.example.battleship;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -140,6 +139,8 @@ public class BoardView extends View {
             }
         }
     }
+
+
     //draw all the cells/locations of board
     private void drawShotPlaces(Canvas canvas) {
         // check the state of each place of the board and draw it.
@@ -229,7 +230,7 @@ public class BoardView extends View {
     }
 
 
-    private void notifyBoardTouch(int x, int y) {
+    public void notifyBoardTouch(int x, int y) {
         for (BoardTouchListener listener: listeners) {
             listener.onTouch(x, y);
         }
@@ -241,7 +242,7 @@ public class BoardView extends View {
 
     //000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 
-    public boolean onTouchEvent2(MotionEvent event){
+    public boolean onTouchEvent2( MotionEvent event){
         if (!NewGameActivity.donePlacingShips) {return false;}
 
         float x = event.getX();
@@ -258,7 +259,7 @@ public class BoardView extends View {
             if ((row < 1) || (row > 10)){return false;}
             if ((col < 1) || (col > 10)){return false;}
 
-            MainActivity.pObj.shotsFired++;
+            //MainActivity.pObj.shotsFired++;
 
             System.out.println("click: " + row + "," + col + " width: " + w);
 
@@ -269,7 +270,8 @@ public class BoardView extends View {
 
                 if (((bx == col - 1) && (by == row - 1)) && ((paintBoard[row - 1][col - 1]) == -1)){
                     paintBoard[row - 1][col - 1] = paintHit;
-                    MainActivity.pObj.shotsHit++;
+                    //MainActivity.pObj.shotsHit++;
+
 
                     if (MainActivity.pObj.shotsHit >= 17){
                         System.out.println("!!!!!!!!!Player wins!!!!!!!!");

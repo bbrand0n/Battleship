@@ -1,16 +1,12 @@
 package com.example.battleship;
 
-import static java.lang.Thread.sleep;
-
 import android.content.ClipData;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,7 +15,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,24 +26,38 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class NewGameActivity extends AppCompatActivity {
 
 
+    final private int PLAYER1_TURN = 1;
+    final private int PLAYER2_TURN = 2;
     private BoardView boardView;
     private Board playerBoard;
     private ShipView shipBeingDragged = null;
     private List<ShipView> fleetView = new LinkedList<>();
-    private Button placeButton;
+    private Button shipsPlaced;
+    private TextView player1name, player2name;
     private Board opponentBoard = null;
     public static boolean donePlacingShips = false;
+    private int turn = 0;
+    ValueEventListener listener;
+    Player player1 = new Player(), player2 = new Player(), player;
+    String roomName = "";
+    Game game;
+    FirebaseDatabase database;
+    DatabaseReference mDb, roomRef, playerRef;
 
     //000000000000000000000000000000000000000000000000000000000000000000
     public static List<Integer> spX = new ArrayList<Integer>();
     public static List<Integer> spY = new ArrayList<Integer>();
     //000000000000000000000000000000000000000000000000000000000000000000
+
+    public static List<Location> locations = new ArrayList<>();
 
     private Thread readMessages;
 
@@ -57,25 +66,50 @@ public class NewGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        //content is what it shows
+        // Get database reference
+        database = FirebaseDatabase.getInstance();
+        mDb = database.getReference();
+
+
+        // Get player info passed through intent
+        Intent i = getIntent();
+        player = i.getParcelableExtra("player");
+        roomName = i.getStringExtra("roomName");
+
+
+        // Set player 1 if they created the room
+        if(roomName.equals(player.getName())) {
+            player1 = player;
+            turn = PLAYER1_TURN;
+        }
+        else {
+            player2 = player;
+            turn = PLAYER2_TURN;
+        }
+
+
+        // Content is what it shows
         RelativeLayout layout = (RelativeLayout) getLayoutInflater().inflate(R.layout.activity_new_game, null);
         setContentView(layout);
 
+
+        // Views
         boardView = findViewById(R.id.shipBoard);
         playerBoard = new Board(10);
         boardView.setBoard(playerBoard);
         boardView.displayBoardsShips(true);
-
-        placeButton = findViewById(R.id.shipsPlaced);
-
-
-        ImageView destroyer = findViewById(R.id.destroyer);
-        ImageView cruiser = findViewById(R.id.cruiser);
-        ImageView submarine = findViewById(R.id.submarine);
-        ImageView battleship = findViewById(R.id.battleship);
-        ImageView carrier = findViewById(R.id.carrier);
+        shipsPlaced = (Button) findViewById(R.id.shipsPlaced);
 
 
+        // Ship images
+        ImageView destroyer =   findViewById(R.id.destroyer);
+        ImageView cruiser =     findViewById(R.id.cruiser);
+        ImageView submarine =   findViewById(R.id.submarine);
+        ImageView battleship =  findViewById(R.id.battleship);
+        ImageView carrier =     findViewById(R.id.carrier);
+
+
+        // Add fleet
         fleetView.add(new ShipView(destroyer, new Ship("destroyer", 2)));
         fleetView.add(new ShipView(cruiser, new Ship("cruiser", 3)));
         fleetView.add(new ShipView(submarine, new Ship("submarine", 3)));
@@ -90,7 +124,126 @@ public class NewGameActivity extends AppCompatActivity {
         setBoardDragListener(boardView, playerBoard);
         boardView.invalidate();
 
+        // Room listener for when player 2 joins
+        addRoomListener();
+
+
+        shipsPlaced.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                shipsPlaced.setText("Waiting...");
+
+                if(turn == PLAYER1_TURN) {
+
+                    playerRef = database.getReference("rooms/" + roomName );
+                    addBoardListener();
+                    game.player1.setBoard(playerBoard);
+                    game.player1.setReady(true);
+                    Map<String, Object> p1 = new HashMap<>();
+                    p1.put("ready", player1.getReady());
+                    mDb.child("rooms").child(roomName).child("player1").updateChildren(p1);
+
+
+
+                }
+                else if(turn == PLAYER2_TURN) {
+
+                    playerRef = database.getReference("rooms/" + roomName );
+                    addBoardListener();
+                    game.player2.setBoard(playerBoard);
+                    game.player2.setReady(true);
+                    Map<String, Object> p2 = new HashMap<>();
+                    p2.put("ready", player2.getReady());
+                    mDb.child("rooms").child(roomName).child("player2").updateChildren(p2);
+
+
+
+                }
+
+
+            }
+        });
     }
+
+
+
+    public void addBoardListener() {
+
+        playerRef.addValueEventListener(listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                // If both players are ready, start game
+                if(snapshot.child("player2").child("ready").getValue(Boolean.class).equals(true) &&
+                        snapshot.child("player1").child("ready").getValue(Boolean.class).equals(true)) {
+                    // Create intent
+                    donePlacingShips = true;
+                    Intent i = new Intent(getApplicationContext(), gamePlay.class);
+                    i.putExtra("game", game);
+                    i.putExtra("player", player);
+                    Bundle bundle = new Bundle();
+                    //bundle.putParcelableArrayList("spX", spX);
+                    //bundle.putParcelableArrayList("spY", spY);
+
+
+
+                    i.putExtra("roomName", roomName);
+                    startActivity(i);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+
+
+    }
+
+
+
+
+
+    public void addRoomListener() {
+
+        roomRef = database.getReference("rooms/" + roomName );
+        roomRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    // Make sure the data change was player 2 joining
+                    if(!dataSnapshot.child("player2").child("name").getValue(String.class).equals("")){
+
+                        // Set isOpen to false when player 2 joins
+                        mDb.child("rooms/" + roomName + "/isOpen").setValue(false);
+
+                        // Create player objects from database
+                        player2 = dataSnapshot.child("player2").getValue(Player.class);
+                        player1 = dataSnapshot.child("player1").getValue(Player.class);
+
+                        // Create game object from players
+                        game = new Game(player1, player2);
+
+
+                        System.out.println("\n++++++++++++++++++++++++++++++++++++");
+                        System.out.println( player2.getName() + " " + player1.getName());
+                        System.out.println("++++++++++++++++++++++++++++++++++++");
+
+                        // TODO: put board listener in here
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
 
     public void setBoardDragListener(final BoardView boardView, final Board board) {
         boardView.setOnDragListener(new View.OnDragListener() {
@@ -159,6 +312,7 @@ public class NewGameActivity extends AppCompatActivity {
                     default:
                         break;
                 }
+                if(allShipsPlaced() == true) shipsPlaced.setEnabled(true);
                 return true;
             }
         });
@@ -312,6 +466,12 @@ public class NewGameActivity extends AppCompatActivity {
         });
     }
 
+    // ----------- REMOVE LISTENER TO PREVENT CONSTANT NEW ACTIVITIES ---------
+    @Override
+    public void onPause() {
+        super.onPause();
+        roomRef.removeEventListener(listener);
+    }
 
     //trying to scale image
     private void setShipImage(final ShipView shipView) {
@@ -320,12 +480,9 @@ public class NewGameActivity extends AppCompatActivity {
     }
 
     public void startGameTapped(View v){
-        donePlacingShips = true;
-        Intent i = new Intent(NewGameActivity.this, gamePlay.class);
-        startActivity(i);
-
-
-
+//        donePlacingShips = true;
+//        Intent i = new Intent(getApplicationContext(), gamePlay.class);
+//        startActivity(i);
 
     }
 

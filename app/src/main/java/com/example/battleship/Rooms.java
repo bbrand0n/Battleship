@@ -26,19 +26,23 @@ import java.util.Map;
 public class Rooms extends AppCompatActivity {
 
 
+
     ListView listView;
     Button createRoom;
     Game newGame;
+    Player player;
     List<String> roomsList;
     String playerName = "";
     String roomName = "1";
     FirebaseDatabase database;
-    DatabaseReference mDb, roomRef, player1;
+    DatabaseReference mDb, roomRef, player1ref;
     DatabaseReference roomsRef;
+    ValueEventListener listener;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         // Default stuff
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rooms);
@@ -51,8 +55,8 @@ public class Rooms extends AppCompatActivity {
 
         // Get player name and assign a room to player
         Intent i = getIntent();
-        playerName = i.getStringExtra("name");
-        roomName = playerName;
+        player = i.getParcelableExtra("player");
+        roomName = player.getName();
 
 
         // Get views
@@ -69,12 +73,16 @@ public class Rooms extends AppCompatActivity {
                 // Create room when clicked, set to player name
                 createRoom.setText("CREATING ROOM");
                 createRoom.setEnabled(false);
-                roomName = playerName;
+                roomName = player.getName();
+
+
+                // Get reference to room
+                roomRef = database.getReference("rooms/" + roomName );
+                addRoomEventListener();
 
 
                 // Create game object and set player as player1
-                player1 = database.getReference("players/" + playerName);
-                newGame = new Game(player1.getKey());
+                newGame = new Game(player);
                 Map<String, Object> game = new HashMap<>();
                 game.put("player1", newGame.getPlayer1());
                 game.put("player2", newGame.getPlayer2());
@@ -83,42 +91,70 @@ public class Rooms extends AppCompatActivity {
 
 
                 // Get reference to room and add listener
-                mDb.child("rooms").child(playerName).updateChildren(game);
-                roomRef = database.getReference("rooms/" + roomName + "/player1");
-                addRoomEventListener();
-                roomRef.setValue(playerName);
-                System.out.println("______________________________________________________________________________________________________");
-                System.out.println(mDb.child("rooms").child(playerName).get());
-                System.out.println("______________________________________________________________________________________________________");
+                mDb.child("rooms").child(roomName).updateChildren(game);
+
             }
         });
 
+        // Join game from list of available games
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 // Join existing room
                 roomName = roomsList.get(position);
                 roomRef = database.getReference("rooms/" + roomName );
                 addRoomEventListener();
-                roomRef.child("player2").setValue(playerName);
+
+
+                // Push player object/map to database
+                Map<String, Object> player2 = new HashMap<>();
+                player2.put("name",         player.getName());
+                player2.put("shotsFired",   player.getShots());
+                player2.put("shotsHit",     player.getHits());
+                mDb.child("rooms").child(roomName).child("player2").updateChildren(player2);
+
             }
         });
 
+
         // If new room is available
         addRoomsEventListener();
+
     }
 
+
+    // ----------- REMOVE LISTENER TO PREVENT CONSTANT NEW ACTIVITIES ---------
+    @Override
+    public void onPause() {
+        super.onPause();
+        roomRef.removeEventListener(listener);
+    }
+
+
+
+    // ----------- Add listener for when player joins ------------
     private void addRoomEventListener() {
-        roomRef.addValueEventListener(new ValueEventListener() {
+
+        roomRef.addValueEventListener(listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                 // Join room
                 createRoom.setText("CREATE ROOM");
                 createRoom.setEnabled(true);
                 Intent i = new Intent(getApplicationContext(), NewGameActivity.class);
-                i.putExtra("playerName", playerName);
-                i.putExtra("roomName",   roomName);
+
+
+
+                // Pass player object into NewGameActivity
+                i.putExtra("player", player);
+                i.putExtra("roomName", roomName);
+
+
+                // Start NewGameActivity
                 startActivity(i);
+
             }
 
             @Override
@@ -129,6 +165,7 @@ public class Rooms extends AppCompatActivity {
                 Toast.makeText(Rooms.this, "Error!", Toast.LENGTH_SHORT);
 
             }
+
         });
     }
 
@@ -158,8 +195,6 @@ public class Rooms extends AppCompatActivity {
                         listView.setAdapter(adapter);
 
                     }
-
-
                 }
             }
 
@@ -169,4 +204,5 @@ public class Rooms extends AppCompatActivity {
             }
         });
     }
+
 }

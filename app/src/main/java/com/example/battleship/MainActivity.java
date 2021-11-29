@@ -1,53 +1,25 @@
 package com.example.battleship;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.os.Debug;
-import android.text.InputType;
-import android.util.Log;
-import android.util.LogPrinter;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity{
@@ -62,6 +34,11 @@ public class MainActivity extends AppCompatActivity{
     DatabaseReference player, mDb;
     FirebaseDatabase database;
     public static Player pObj = new Player("");
+
+    // For text color in console logging
+    public static final String COLOR_GREEN = "\u001B[32m";
+    public static final String COLOR_RED = "\u001B[31m";
+    public static final String COLOR_RESET = "\u001B[0m";
 
     // Start App
     @Override
@@ -106,6 +83,7 @@ public class MainActivity extends AppCompatActivity{
 
 
 
+
         // ---------- GET ROOM LIST ------------
         find_room.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,10 +109,13 @@ public class MainActivity extends AppCompatActivity{
                 System.out.println("______________________________________________________________________________________________________");
                 System.out.println(pObj.getName());
                 System.out.println(mDb.child("rooms").child(pObj.getName()).getKey());
+                System.out.println(COLOR_GREEN + "Added " + mDb.child("rooms").child(pObj.getName()).getKey() + " to database." + COLOR_RESET);
                 System.out.println("______________________________________________________________________________________________________");
             }
         });
     }
+
+
 
     // --------- LISTENS TO CHANGES IN DATABASE --------------
     private void addEventListener() {
@@ -149,7 +130,7 @@ public class MainActivity extends AppCompatActivity{
 
                     // Launch new activity
                     Intent i = new Intent(getApplicationContext(), Rooms.class);
-                    i.putExtra("name", player.getKey());
+                    i.putExtra("player", pObj);
                     startActivity(i);
                     finish();
                 }
