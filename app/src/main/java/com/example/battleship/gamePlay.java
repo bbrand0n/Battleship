@@ -19,7 +19,7 @@ public class gamePlay extends AppCompatActivity {
 
     Game game;
     Player player1, player2, player;
-    int turn , host  ;
+    int turn = 1, host  ;
     BoardView  boardView, playerBoardView;
     Board player1Board, player2Board, board;
     String roomName;
@@ -97,23 +97,8 @@ public class gamePlay extends AppCompatActivity {
                 mDb.child("rooms").child(roomName).child("lastShotX").setValue(x);
                 mDb.child("rooms").child(roomName).child("lastShotY").setValue(y);
                 boardView.setClickable(false);
-                //boardView.setBoard(player.getBoard());
+
                 boardView.displayBoardsShips(true);
-
-                //board.setBoard(player2board);
-                //turn = 2;
-                //mDb.child("rooms").child(player1.getName()).child("lastTurn").setValue(turn);
-                //}
-//                else {
-//                    mDb.child("rooms").child(roomName).child("lastTurn").setValue(host);
-//                    mDb.child("rooms").child(roomName).child("lastShotX").setValue(x);
-//                    mDb.child("rooms").child(roomName).child("lastShotY").setValue(y);
-//                    shotBoard.setEnabled(false);
-//
-//                    //turn = 1;
-//                    mDb.child("rooms").child(player1.getName()).child("lastTurn").setValue(turn);
-//                }
-
 
 
             }
@@ -121,13 +106,9 @@ public class gamePlay extends AppCompatActivity {
 
 
 
+        // Listen to incoming shots
         addLastShotListener();
 
-
-
-
-        // Listen to incoming messages
-        //addBoardTouchListener();
 
     }
 
@@ -137,52 +118,101 @@ public class gamePlay extends AppCompatActivity {
         roomRef = database.getReference("rooms/" + roomName);
 
 
-//        roomRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//        roomRef.addChildEventListener(new ChildEventListener() {
 //            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
+//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 //
 //            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//                if(snapshot.getKey().equals("lastTurn") );{
+//
+//                    // For player1 receiving shot from player2
+//                    if(host == 1) {
+//                        if(snapshot.getValue(Integer.class).equals(2)){
+//
+//                            turn = 1;
+//
+//                            board.hit(snapshot.child("lastShotX").getValue(Integer.class),
+//                                    snapshot.child("lastShotY").getValue(Integer.class));
+//
+//                            boardView.setBoard(board);
+//
+//                            boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
+//                                    snapshot.child("lastShotY").getValue(Integer.class));
+//
+//                        }
+//
+//                        else {
+//                            turn = 2;
+//                        }
+//                    }
+//
+//
+//                    // For player2 receiving shot from player1
+//                    else if(host == 2) {
+//                        if(snapshot.getValue(Integer.class).equals(1)) {
+//
+//                            turn = 2;
+//
+//                            board.hit(snapshot.child("lastShotX").getValue(Integer.class),
+//                                    snapshot.child("lastShotY").getValue(Integer.class));
+//
+//                            boardView.setBoard(board);
+//
+//                            boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
+//                                    snapshot.child("lastShotY").getValue(Integer.class));
+//
+//                        }
+//                        else {
+//                            turn = 1;
+//                        }
+//
+//                    }
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot snapshot) { }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) { }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) { }
 //        });
 
+//
+//
 
-
-        roomRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 roomRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         // Check for just changes in lastTurn, lastShotX, lastShotY
-                        if(snapshot.child("lastTurn").exists() &&
+                        if (snapshot.child("lastTurn").exists() &&
                                 snapshot.child("lastShotX").exists() &&
-                                snapshot.child("lastShotY").exists()){
+                                snapshot.child("lastShotY").exists()) {
 
                             // For player1 receiving shot from player2
-                            if(host == 1) {
-                                if(snapshot.child("lastTurn").getValue(Integer.class).equals(2)){
+                            if (host == 1) {
+                                if (snapshot.child("lastTurn").getValue(Integer.class).equals(2)) {
 
-                                    //boardView.setBoard(playerBoard);
+
                                     boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
                                             snapshot.child("lastShotY").getValue(Integer.class));
                                     boardView.displayBoardsShips(false);
                                     boardView.setClickable(true);
 
-//                        shotBoard.setBoard(player1board);
-//                        shotBoard.displayBoardsShips(true);
-//                        shotBoard.setEnabled(false);
+
                                 }
                             }
                             // For player2 receiving shot from player1
-                            else if(host == 2) {
-                                if(snapshot.child("lastTurn").getValue(Integer.class).equals(1)) {
-
-                                    //boardView.setBoard(player2Board);
+                            else if (host == 2) {
+                                if (snapshot.child("lastTurn").getValue(Integer.class).equals(1)) {
 
 
                                     boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
@@ -190,11 +220,8 @@ public class gamePlay extends AppCompatActivity {
                                     boardView.displayBoardsShips(false);
                                     boardView.setClickable(true);
                                 }
-
                             }
                         }
-
-
                     }
 
                     @Override
@@ -202,53 +229,5 @@ public class gamePlay extends AppCompatActivity {
 
                     }
                 });
-                // Check for just changes in lastTurn, lastShotX, lastShotY
-                if(snapshot.child("lastTurn").exists() &&
-                        snapshot.child("lastShotX").exists() &&
-                            snapshot.child("lastShotY").exists()){
-
-                    // For player1 receiving shot from player2
-                    if(host == 1) {
-                        if(snapshot.child("lastTurn").getValue(Integer.class).equals(2)){
-
-                            //boardView.setBoard(playerBoard);
-                            boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
-                                    snapshot.child("lastShotY").getValue(Integer.class));
-                            boardView.displayBoardsShips(false);
-                            boardView.setClickable(true);
-
-//                        shotBoard.setBoard(player1board);
-//                        shotBoard.displayBoardsShips(true);
-//                        shotBoard.setEnabled(false);
-                        }
-                    }
-                    // For player2 receiving shot from player1
-                    else if(host == 2) {
-                        if(snapshot.child("lastTurn").getValue(Integer.class).equals(1)) {
-
-                            //boardView.setBoard(player2Board);
-
-
-                            boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
-                                    snapshot.child("lastShotY").getValue(Integer.class));
-                            boardView.displayBoardsShips(false);
-                            boardView.setClickable(true);
-                        }
-
-                    }
-                }
-
-
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
-
-
-
 }
