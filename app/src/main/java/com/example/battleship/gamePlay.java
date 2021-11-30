@@ -22,7 +22,7 @@ public class gamePlay extends AppCompatActivity {
     int turn = 1, host  ;
     BoardView  boardView, playerBoardView;
     Board player1Board, player2Board, board;
-    String roomName;
+    String roomName, player1Coord, player2Coord;
     ValueEventListener shotListener;
     FirebaseDatabase database;
     DatabaseReference mDb, roomRef, playerRef;
@@ -112,6 +112,10 @@ public class gamePlay extends AppCompatActivity {
 
 
 
+
+
+
+
         boardView.addBoardTouchListener(new BoardView.BoardTouchListener() {
             @Override
             public void onTouch(int x, int y) {
@@ -142,79 +146,21 @@ public class gamePlay extends AppCompatActivity {
         roomRef = database.getReference("rooms/" + roomName);
 
 
-//        roomRef.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//                if(snapshot.getKey().equals("lastTurn") );{
-//
-//                    // For player1 receiving shot from player2
-//                    if(host == 1) {
-//                        if(snapshot.getValue(Integer.class).equals(2)){
-//
-//                            turn = 1;
-//
-//                            board.hit(snapshot.child("lastShotX").getValue(Integer.class),
-//                                    snapshot.child("lastShotY").getValue(Integer.class));
-//
-//                            boardView.setBoard(board);
-//
-//                            boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
-//                                    snapshot.child("lastShotY").getValue(Integer.class));
-//
-//                        }
-//
-//                        else {
-//                            turn = 2;
-//                        }
-//                    }
-//
-//
-//                    // For player2 receiving shot from player1
-//                    else if(host == 2) {
-//                        if(snapshot.getValue(Integer.class).equals(1)) {
-//
-//                            turn = 2;
-//
-//                            board.hit(snapshot.child("lastShotX").getValue(Integer.class),
-//                                    snapshot.child("lastShotY").getValue(Integer.class));
-//
-//                            boardView.setBoard(board);
-//
-//                            boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
-//                                    snapshot.child("lastShotY").getValue(Integer.class));
-//
-//                        }
-//                        else {
-//                            turn = 1;
-//                        }
-//
-//                    }
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot snapshot) { }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) { }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) { }
-//        });
-
-//
-//
-
 
                 roomRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+
+                        // Get player coords from class
+                        player1Coord = snapshot.child("playerCoor1").getValue(String.class);
+                        player2Coord = snapshot.child("playerCoor2").getValue(String.class);
+
+                        System.out.println("\n===================================");
+                        System.out.println("Player 1 Coords: " + player1Coord);
+                        System.out.println("Player 2 Coords: " + player2Coord);
+                        System.out.println("\n===================================");
+
 
                         // Check for just changes in lastTurn, lastShotX, lastShotY
                         if (snapshot.child("lastTurn").exists() &&

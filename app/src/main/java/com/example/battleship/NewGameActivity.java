@@ -52,6 +52,10 @@ public class NewGameActivity extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference mDb, roomRef, playerRef;
 
+    //000000000000000000000000000000000000000000000000000000000000000000
+    public static List<Integer> spX = new ArrayList<Integer>();
+    public static List<Integer> spY = new ArrayList<Integer>();
+    //000000000000000000000000000000000000000000000000000000000000000000
 
     public static List<Location> locations = new ArrayList<>();
 
@@ -178,7 +182,6 @@ public class NewGameActivity extends AppCompatActivity {
 
                     // Create intent
                     donePlacingShips = true;
-
                     Intent i = new Intent(getApplicationContext(), gamePlay.class);
                     i.putExtra("player", player);
                     i.putExtra("board", playerBoard);
