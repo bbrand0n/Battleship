@@ -263,14 +263,12 @@ public class BoardView extends View {
 
             System.out.println("click: " + row + "," + col + " width: " + w);
             System.out.println("opX: " + gamePlay.opX.size() + " opY: " + gamePlay.opY.size());
-            for (int i = 0; i < gamePlay.spX.size(); i++) {
-                System.out.println("\n+++++++++++++++++++++++++++++++++++");
-                System.out.println("Player 1 opX: " + gamePlay.opX.get(i));
-                System.out.println("Player 2 opY: " + gamePlay.opY.get(i));
-                System.out.println("\n+++++++++++++++++++++++++++++++++==");
-            }
+            System.out.println("\n+++++++++++++++++++++++++++++++++++");
+            System.out.println("Player 1 opX: " + gamePlay.opX.toString());
+            System.out.println("Player 2 opY: " + gamePlay.opY.toString());
+            System.out.println("\n+++++++++++++++++++++++++++++++++==");
 
-            for (int i = 0; i < gamePlay.spX.size(); i++)
+            for (int i = 0; i < gamePlay.opX.size(); i++)
             {
                 int bx = gamePlay.opX.get(i);
                 int by = gamePlay.opY.get(i);

@@ -37,7 +37,7 @@ public class gamePlay extends AppCompatActivity {
 
     public static String playerCoor = new String("");
 
-    String[] sa = new String[10];
+    String[] sa = new String[17];
     //000000000000000000000000000000000000000000000000000000000000000000
 
 
@@ -92,16 +92,16 @@ public class gamePlay extends AppCompatActivity {
             boardView.setClickable(false);
         }
 
-        for (int k = 0; k < 10; k++)
+        for (int k = 0; k < 17; k++)
         {
-            if (k < 9) {playerCoor = playerCoor + String.valueOf(spX.get(k)) + ",";}
+            if (k < 16) {playerCoor = playerCoor + String.valueOf(spX.get(k)) + ",";}
             else{       playerCoor = playerCoor + String.valueOf(spX.get(k));}
         }
 
         playerCoor = playerCoor+"!";
 
-        for (int k = 0; k < 10; k++){
-            if (k < 9) {playerCoor = playerCoor + String.valueOf(spY.get(k)) + ",";}
+        for (int k = 0; k < 17; k++){
+            if (k < 16) {playerCoor = playerCoor + String.valueOf(spY.get(k)) + ",";}
             else{       playerCoor = playerCoor + String.valueOf(spY.get(k));}
         }
         if (host == 1){
@@ -167,7 +167,7 @@ public class gamePlay extends AppCompatActivity {
                             sa = player2Coord.split("!");
                             sa = sa[0].split(",");
 
-                            for (int u = 0; u < 10; u++)
+                            for (int u = 0; u < sa.length; u++)
                             {
                                 opX.add(new Integer(Integer.parseInt(sa[u])));
                             }
@@ -175,7 +175,7 @@ public class gamePlay extends AppCompatActivity {
                             sa = player2Coord.split("!");
                             sa = sa[1].split(",");
 
-                            for (int u = 0; u < 10; u++)
+                            for (int u = 0; u < sa.length; u++)
                             {
                                 opY.add(new Integer(Integer.parseInt(sa[u])));
                             }
@@ -185,7 +185,7 @@ public class gamePlay extends AppCompatActivity {
                             sa = player1Coord.split("!");
                             sa = sa[0].split(",");
 
-                            for (int u = 0; u < 10; u++)
+                            for (int u = 0; u < sa.length; u++)
                             {
                                 opX.add(new Integer(Integer.parseInt(sa[u])));
                             }
@@ -193,7 +193,7 @@ public class gamePlay extends AppCompatActivity {
                             sa = player1Coord.split("!");
                             sa = sa[1].split(",");
 
-                            for (int u = 0; u < 10; u++)
+                            for (int u = 0; u < sa.length; u++)
                             {
                                 opY.add(new Integer(Integer.parseInt(sa[u])));
                             }
