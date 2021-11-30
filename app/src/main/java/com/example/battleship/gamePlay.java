@@ -27,9 +27,16 @@ public class gamePlay extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference mDb, roomRef, playerRef;
 
-
+    //000000000000000000000000000000000000000000000000000000000000000000
     public static List<Integer> spX = new ArrayList<Integer>();
     public static List<Integer> spY = new ArrayList<Integer>();
+
+
+    public static List<Integer> opX = new ArrayList<Integer>();
+    public static List<Integer> opY = new ArrayList<Integer>();
+
+    public static String playerCoor = new String("");
+    //000000000000000000000000000000000000000000000000000000000000000000
 
 
     @Override
@@ -83,7 +90,24 @@ public class gamePlay extends AppCompatActivity {
             boardView.setClickable(false);
         }
 
+        for (int k = 0; k < 10; k++)
+        {
+            if (k < 9) {playerCoor = playerCoor + String.valueOf(spX.get(k)) + ",";}
+            else{       playerCoor = playerCoor + String.valueOf(spX.get(k));}
+        }
 
+        playerCoor = playerCoor+"!";
+
+        for (int k = 0; k < 10; k++){
+            if (k < 9) {playerCoor = playerCoor + String.valueOf(spY.get(k)) + ",";}
+            else{       playerCoor = playerCoor + String.valueOf(spY.get(k));}
+        }
+        if (host == 1){
+            mDb.child("rooms").child(roomName).child("playerCoor1").setValue(playerCoor);
+        }
+        if (host == 2){
+            mDb.child("rooms").child(roomName).child("playerCoor2").setValue(playerCoor);
+        }
 
 
 

@@ -101,13 +101,13 @@ public class Ship implements Serializable {
 
         // 000000000000000000000000000000000000000000000000000000000000000000000000
         for(int i = 0; i < placed.size(); i++) {
-            for (int k = 0; k < NewGameActivity.spX.size(); k++) {
-                int bx = NewGameActivity.spX.get(k);
-                int by = NewGameActivity.spY.get(k);
+            for (int k = 0; k < gamePlay.spX.size(); k++) {
+                int bx = gamePlay.spX.get(k);
+                int by = gamePlay.spY.get(k);
 
                 if ((bx == placed.get(i).getX()) && (by == placed.get(i).getY())) {
-                    NewGameActivity.spX.remove(k);
-                    NewGameActivity.spY.remove(k);
+                    gamePlay.spX.remove(k);
+                    gamePlay.spY.remove(k);
                     break;
                 }
             }
