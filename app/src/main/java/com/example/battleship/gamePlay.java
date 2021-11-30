@@ -36,6 +36,8 @@ public class gamePlay extends AppCompatActivity {
     public static List<Integer> opY = new ArrayList<Integer>();
 
     public static String playerCoor = new String("");
+
+    String[] sa = new String[10];
     //000000000000000000000000000000000000000000000000000000000000000000
 
 
@@ -111,11 +113,6 @@ public class gamePlay extends AppCompatActivity {
 
 
 
-
-
-
-
-
         boardView.addBoardTouchListener(new BoardView.BoardTouchListener() {
             @Override
             public void onTouch(int x, int y) {
@@ -161,6 +158,46 @@ public class gamePlay extends AppCompatActivity {
                         System.out.println("Player 2 Coords: " + player2Coord);
                         System.out.println("\n===================================");
 
+                        System.out.println("\n+++++++++++++++++++++++++++++++++++");
+                        System.out.println("Player 1 Coords: " + player1Coord);
+                        System.out.println("Player 2 Coords: " + player2Coord);
+                        System.out.println("\n+++++++++++++++++++++++++++++++++==");
+
+                        if ((host == 1) && (player2Coord != null)){
+                            sa = player2Coord.split("!");
+                            sa = sa[0].split(",");
+
+                            for (int u = 0; u < 10; u++)
+                            {
+                                opX.add(new Integer(Integer.parseInt(sa[u])));
+                            }
+
+                            sa = player2Coord.split("!");
+                            sa = sa[1].split(",");
+
+                            for (int u = 0; u < 10; u++)
+                            {
+                                opY.add(new Integer(Integer.parseInt(sa[u])));
+                            }
+                        }
+
+                        if ((host == 2) && (player1Coord != null)){
+                            sa = player1Coord.split("!");
+                            sa = sa[0].split(",");
+
+                            for (int u = 0; u < 10; u++)
+                            {
+                                opX.add(new Integer(Integer.parseInt(sa[u])));
+                            }
+
+                            sa = player1Coord.split("!");
+                            sa = sa[1].split(",");
+
+                            for (int u = 0; u < 10; u++)
+                            {
+                                opY.add(new Integer(Integer.parseInt(sa[u])));
+                            }
+                        }
 
                         // Check for just changes in lastTurn, lastShotX, lastShotY
                         if (snapshot.child("lastTurn").exists() &&

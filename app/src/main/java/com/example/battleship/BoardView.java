@@ -262,11 +262,18 @@ public class BoardView extends View {
             //MainActivity.pObj.shotsFired++;
 
             System.out.println("click: " + row + "," + col + " width: " + w);
+            System.out.println("opX: " + gamePlay.opX.size() + " opY: " + gamePlay.opY.size());
+            for (int i = 0; i < gamePlay.spX.size(); i++) {
+                System.out.println("\n+++++++++++++++++++++++++++++++++++");
+                System.out.println("Player 1 opX: " + gamePlay.opX.get(i));
+                System.out.println("Player 2 opY: " + gamePlay.opY.get(i));
+                System.out.println("\n+++++++++++++++++++++++++++++++++==");
+            }
 
             for (int i = 0; i < gamePlay.spX.size(); i++)
             {
-                int bx = gamePlay.spX.get(i);
-                int by = gamePlay.spY.get(i);
+                int bx = gamePlay.opX.get(i);
+                int by = gamePlay.opY.get(i);
 
                 if (((bx == col - 1) && (by == row - 1)) && ((paintBoard[row - 1][col - 1]) == -1)){
                     paintBoard[row - 1][col - 1] = paintHit;
