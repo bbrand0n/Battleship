@@ -14,10 +14,11 @@ import java.util.List;
 public class BoardView extends View {
 
     //000000000000000000000000000000000000000000000000000000000000000000000000000
-    private final Paint paintMarker = new Paint();
-    private int[][] paintBoard = new int[10][10];
-    private int paintHit = 1;
-    private int paintMiss = 0;
+    public final Paint paintMarker = new Paint();
+    public int[][] paintBoard = new int[10][10];
+    public int paintHit = 1;
+    public int paintMiss = 0;
+    private Boolean isTouchable = true;
     //000000000000000000000000000000000000000000000000000000000000000000000000000
 
     //custom view for board based off tutorial
@@ -58,6 +59,15 @@ public class BoardView extends View {
         initRC();
     }
 
+    public boolean isTouchable() {
+        return isTouchable;
+    }
+
+    public void setTouchable(boolean isTouchable) {
+        this.isTouchable = isTouchable;
+    }
+
+
     //create board with attributes
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -86,6 +96,8 @@ public class BoardView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(!isTouchable) return false;
+
         //000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         if( event.getAction() == MotionEvent.ACTION_DOWN){
             System.out.println(event.getX() + " " + event.getY());
@@ -243,6 +255,7 @@ public class BoardView extends View {
     //000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 
     public boolean onTouchEvent2( MotionEvent event){
+        if (!isTouchable) { return false; }
         if (!NewGameActivity.donePlacingShips) {return false;}
 
         float x = event.getX();
@@ -262,13 +275,18 @@ public class BoardView extends View {
             //MainActivity.pObj.shotsFired++;
 
             System.out.println("click: " + row + "," + col + " width: " + w);
-            System.out.println("opX: " + gamePlay.opX.size() + " opY: " + gamePlay.opY.size());
-            System.out.println("\n+++++++++++++++++++++++++++++++++++");
-            System.out.println("Player 1 opX: " + gamePlay.opX.toString());
-            System.out.println("Player 2 opY: " + gamePlay.opY.toString());
-            System.out.println("\n+++++++++++++++++++++++++++++++++==");
 
-            for (int i = 0; i < gamePlay.opX.size(); i++)
+            System.out.println("opX: " + gamePlay.opX.size() + " opY: " + gamePlay.opY.size());
+            System.out.println("spX: " + gamePlay.spX.size() + " spY: " + gamePlay.spY.size());
+
+            for (int i = 0; i < gamePlay.spX.size(); i++) {
+                System.out.println("\n+++++++++++++++++++++++++++++++++++");
+                System.out.println("Player 1 opX: " + gamePlay.opX.get(i));
+                System.out.println("Player 2 opY: " + gamePlay.opY.get(i));
+                System.out.println("\n+++++++++++++++++++++++++++++++++==");
+            }
+
+            for (int i = 0; i < gamePlay.spX.size(); i++)
             {
                 int bx = gamePlay.opX.get(i);
                 int by = gamePlay.opY.get(i);
@@ -284,6 +302,9 @@ public class BoardView extends View {
                     break;
                 }
             }
+
+
+
             if (paintBoard[row - 1][col - 1] != paintHit)
             {
                 paintBoard[row - 1][col - 1] = paintMiss;

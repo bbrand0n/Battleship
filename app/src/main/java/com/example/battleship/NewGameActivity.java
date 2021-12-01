@@ -187,6 +187,7 @@ public class NewGameActivity extends AppCompatActivity {
                     i.putExtra("board", playerBoard);
                     i.putExtra("roomName", roomName);
                     startActivity(i);
+                    finish();
                 }
             }
 

@@ -26,6 +26,23 @@ public class Board implements Parcelable {
         createBoard(board);
     }
 
+    public Board(int size, List<Integer> opX, List<Integer> opY){
+        this.size = size;
+        board = new Location[size()][size()];
+        createBoard(board);
+
+        for(int x : opX) {
+            for(int y : opY) {
+
+
+
+            }
+        }
+
+
+    }
+
+
 
     protected Board(Parcel in) {
         size = in.readInt();
@@ -53,6 +70,11 @@ public class Board implements Parcelable {
             }
         }
     }
+
+
+
+
+
 
     //place ship
     boolean placeShip(Ship ship, int x, int y, boolean dir){
@@ -84,6 +106,7 @@ public class Board implements Parcelable {
 
             //If was a valid place then adds to list of places, and looks through other places
             shipPlaces.add(place);
+
         }
 
 

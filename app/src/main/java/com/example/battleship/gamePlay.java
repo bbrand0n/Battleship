@@ -23,7 +23,7 @@ public class gamePlay extends AppCompatActivity {
     BoardView  boardView, playerBoardView;
     Board player1Board, player2Board, board;
     String roomName, player1Coord, player2Coord;
-    ValueEventListener shotListener;
+    ValueEventListener listener;
     FirebaseDatabase database;
     DatabaseReference mDb, roomRef, playerRef;
 
@@ -37,7 +37,7 @@ public class gamePlay extends AppCompatActivity {
 
     public static String playerCoor = new String("");
 
-    String[] sa = new String[17];
+    String[] sa = new String[18];
     //000000000000000000000000000000000000000000000000000000000000000000
 
 
@@ -66,31 +66,9 @@ public class gamePlay extends AppCompatActivity {
         boardView.setBoard(board);
         boardView.setClickable(false);
         turn = 1;
-        //boardView.displayBoardsShips(true);
 
 
-        if(roomName.equals(player.getName())) {
-            host = 1;
 
-            //player = player1;
-            //playerBoard = player.getBoard();
-
-            //boardView.setBoard(player1Board);
-            boardView.displayBoardsShips(false);
-            boardView.setEnabled(true);
-            boardView.setClickable(true);
-            //playBoard;
-        }
-        else {
-            host = 2;
-            //player = player2;
-            //playerBoard = player.getBoard();
-            //boardView.setBoard(player.getBoard());
-            //boardView.displayBoardsShips(true);
-            boardView.displayBoardsShips(true);
-            boardView.setEnabled(false);
-            boardView.setClickable(false);
-        }
 
         for (int k = 0; k < 17; k++)
         {
@@ -104,100 +82,164 @@ public class gamePlay extends AppCompatActivity {
             if (k < 16) {playerCoor = playerCoor + String.valueOf(spY.get(k)) + ",";}
             else{       playerCoor = playerCoor + String.valueOf(spY.get(k));}
         }
-        if (host == 1){
-            mDb.child("rooms").child(roomName).child("playerCoor1").setValue(playerCoor);
+
+
+
+        if(roomName.equals(player.getName())) {
+
+            // For player 1
+            host = 1;
+            player1Coord = playerCoor;
+
         }
-        if (host == 2){
-            mDb.child("rooms").child(roomName).child("playerCoor2").setValue(playerCoor);
+        else {
+            // This is if player 2 is currently playing
+            host = 2;
+            player2Coord = playerCoor;
+
+            // Initially set touchable to false (player 1s turn first)
+            boardView.setTouchable(false);
+            boardView.displayBoardsShips(true);
+
         }
 
 
+        // Get other players coords
+        getOtherCoords();
 
+
+        // Upload player 1 coords to database
+        if (host == 1)
+            mDb.child("rooms").child(roomName).child("player1").child("playerCoor1").setValue(playerCoor);
+
+        // Upload player 2 coords to database
+        if (host == 2)
+            mDb.child("rooms").child(roomName).child("player2").child("playerCoor2").setValue(playerCoor);
+
+
+        // Listener for board touches
         boardView.addBoardTouchListener(new BoardView.BoardTouchListener() {
             @Override
             public void onTouch(int x, int y) {
-                //if(host == 1){
 
+
+                // Make sure board is touchable
+                if(!boardView.isTouchable()) return;
+
+
+                // Upload last shot info
                 mDb.child("rooms").child(roomName).child("lastTurn").setValue(host);
                 mDb.child("rooms").child(roomName).child("lastShotX").setValue(x);
                 mDb.child("rooms").child(roomName).child("lastShotY").setValue(y);
-                boardView.setClickable(false);
 
+                // Set board untouchable
+                boardView.setTouchable(false);
                 boardView.displayBoardsShips(true);
-
 
             }
         });
 
 
 
-        // Listen to incoming shots
-        addLastShotListener();
 
 
     }
 
 
-    public void addLastShotListener() {
+    public void getOtherCoords() {
 
+        // Set reference to database
         roomRef = database.getReference("rooms/" + roomName);
 
 
+        // Add listener for database
+        roomRef.addValueEventListener(listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+                // Get player 1 coords from database
+                if(host == 1)
+                    player2Coord = snapshot.child("player2").child("playerCoor2").getValue(String.class);
+
+                // Get player 2 coords from database
+                else if(host == 2)
+                    player1Coord = snapshot.child("player1").child("playerCoor1").getValue(String.class);
+
+
+
+                System.out.println("\n===================================");
+                System.out.println("Player 1 Coords: " + player1Coord);
+                System.out.println("Player 2 Coords: " + player2Coord);
+                System.out.println("\n===================================");
+
+                System.out.println("\n+++++++++++++++++++++++++++++++++++");
+                System.out.println("Player 1 Coords: " + player1Coord);
+                System.out.println("Player 2 Coords: " + player2Coord);
+                System.out.println("\n+++++++++++++++++++++++++++++++++==");
+
+
+                // Retrieve player 2 ship places from database
+                if ((host == 1) && (player2Coord != null)) {
+                    sa = player2Coord.split("!");
+                    sa = sa[0].split(",");
+
+                    for (int u = 0; u < 17; u++) {
+                        opX.add(new Integer(Integer.parseInt(sa[u])));
+                    }
+
+                    sa = player2Coord.split("!");
+                    sa = sa[1].split(",");
+
+                    for (int u = 0; u < 17; u++) {
+                        opY.add(new Integer(Integer.parseInt(sa[u])));
+                    }
+                }
+
+
+                // Retrieve player 2 ship places from database
+                if ((host == 2) && (player1Coord != null)) {
+
+                    // X
+                    sa = player1Coord.split("!");
+                    sa = sa[0].split(",");
+                    for (int u = 0; u < 17; u++)
+                        opX.add(new Integer(Integer.parseInt(sa[u])));
+
+                    // Y
+                    sa = player1Coord.split("!");
+                    sa = sa[1].split(",");
+                    for (int u = 0; u < 17; u++)
+                        opY.add(new Integer(Integer.parseInt(sa[u])));
+
+                }
+
+                // Add shot listener
+                addLastShotListener();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+    }
+
+
+    public void addLastShotListener() {
+
+        // Remove previous listener
+        if(player1Coord != null && player2Coord != null) {
+            roomRef.removeEventListener(listener);
+        }
+
+
+        // Set room reference
+        roomRef = database.getReference("rooms/" + roomName);
+
+
+        // Add listener for last shot
                 roomRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-
-                        // Get player coords from class
-                        player1Coord = snapshot.child("playerCoor1").getValue(String.class);
-                        player2Coord = snapshot.child("playerCoor2").getValue(String.class);
-
-                        System.out.println("\n===================================");
-                        System.out.println("Player 1 Coords: " + player1Coord);
-                        System.out.println("Player 2 Coords: " + player2Coord);
-                        System.out.println("\n===================================");
-
-                        System.out.println("\n+++++++++++++++++++++++++++++++++++");
-                        System.out.println("Player 1 Coords: " + player1Coord);
-                        System.out.println("Player 2 Coords: " + player2Coord);
-                        System.out.println("\n+++++++++++++++++++++++++++++++++==");
-
-                        if ((host == 1) && (player2Coord != null)){
-                            sa = player2Coord.split("!");
-                            sa = sa[0].split(",");
-
-                            for (int u = 0; u < sa.length; u++)
-                            {
-                                opX.add(new Integer(Integer.parseInt(sa[u])));
-                            }
-
-                            sa = player2Coord.split("!");
-                            sa = sa[1].split(",");
-
-                            for (int u = 0; u < sa.length; u++)
-                            {
-                                opY.add(new Integer(Integer.parseInt(sa[u])));
-                            }
-                        }
-
-                        if ((host == 2) && (player1Coord != null)){
-                            sa = player1Coord.split("!");
-                            sa = sa[0].split(",");
-
-                            for (int u = 0; u < sa.length; u++)
-                            {
-                                opX.add(new Integer(Integer.parseInt(sa[u])));
-                            }
-
-                            sa = player1Coord.split("!");
-                            sa = sa[1].split(",");
-
-                            for (int u = 0; u < sa.length; u++)
-                            {
-                                opY.add(new Integer(Integer.parseInt(sa[u])));
-                            }
-                        }
 
                         // Check for just changes in lastTurn, lastShotX, lastShotY
                         if (snapshot.child("lastTurn").exists() &&
@@ -208,33 +250,65 @@ public class gamePlay extends AppCompatActivity {
                             if (host == 1) {
                                 if (snapshot.child("lastTurn").getValue(Integer.class).equals(2)) {
 
+                                    // Get last shot from database
+                                    int x = snapshot.child("lastShotX").getValue(Integer.class);
+                                    int y = snapshot.child("lastShotY").getValue(Integer.class);
 
-                                    boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
-                                            snapshot.child("lastShotY").getValue(Integer.class));
+
+                                    // See if last shot was a hit
+                                    for (int i = 0; i < gamePlay.opX.size(); i++)
+                                    {
+                                        int bx = gamePlay.spX.get(i);
+                                        int by = gamePlay.spY.get(i);
+
+                                        // Paint board if hit
+                                        if (((bx == x) && (by == y)) && ((boardView.paintBoard[y][x]) == -1)){
+
+                                            boardView.paintBoard[y][x] = boardView.paintHit;
+                                            break;
+                                        }
+                                    }
+
+                                    // Enable touch
+                                    boardView.setTouchable(true);
                                     boardView.displayBoardsShips(false);
-                                    boardView.setClickable(true);
-
-
                                 }
                             }
+
+
                             // For player2 receiving shot from player1
                             else if (host == 2) {
                                 if (snapshot.child("lastTurn").getValue(Integer.class).equals(1)) {
 
+                                    // Get last shot from database
+                                    int x = snapshot.child("lastShotX").getValue(Integer.class);
+                                    int y = snapshot.child("lastShotY").getValue(Integer.class);
 
-                                    boardView.notifyBoardTouch(snapshot.child("lastShotX").getValue(Integer.class),
-                                            snapshot.child("lastShotY").getValue(Integer.class));
+
+                                    // See if last shot was a hit
+                                    for (int i = 0; i < gamePlay.opX.size(); i++)
+                                    {
+                                        int bx = gamePlay.spX.get(i);
+                                        int by = gamePlay.spY.get(i);
+
+                                        // Paint board if hit
+                                        if (((bx == x) && (by == y)) && ((boardView.paintBoard[y][x]) < 1)){
+
+                                            boardView.paintBoard[y][x] = boardView.paintHit;
+                                            break;
+                                        }
+
+                                    }
+
+                                    // Enable touch
+                                    boardView.setTouchable(true);
                                     boardView.displayBoardsShips(false);
-                                    boardView.setClickable(true);
                                 }
                             }
                         }
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                    public void onCancelled(@NonNull DatabaseError error) { }});
             }
 }
