@@ -16,15 +16,29 @@ public class Board implements Parcelable {
     //where ship has been shot
     private int placesShot = 0;
 
-//    public Board(){
-//      this(10);
-//    }
 
     public Board(int size) {
         this.size = size;
         board = new Location[size()][size()];
         createBoard(board);
     }
+
+    public Board(int size, List<Integer> opX, List<Integer> opY){
+        this.size = size;
+        board = new Location[size()][size()];
+        createBoard(board);
+
+        for(int x : opX) {
+            for(int y : opY) {
+
+
+
+            }
+        }
+
+
+    }
+
 
 
     protected Board(Parcel in) {
@@ -53,6 +67,11 @@ public class Board implements Parcelable {
             }
         }
     }
+
+
+
+
+
 
     //place ship
     boolean placeShip(Ship ship, int x, int y, boolean dir){
@@ -84,6 +103,7 @@ public class Board implements Parcelable {
 
             //If was a valid place then adds to list of places, and looks through other places
             shipPlaces.add(place);
+
         }
 
 
@@ -205,21 +225,9 @@ public class Board implements Parcelable {
         }
         return boardPlaces;
     }
+    
 
-    ///true if all sunk
-    boolean isAllSunk(){
-        for(int i = 0; i < size(); i++){
-            for(int j = 0; j < size(); j++){
-                Location place = board[i][j];
-                if(place.hasShip() && !place.isHit()){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    //true if all ships are hti
+    //true if all ships are hit
     boolean isAllHit(){
         for(int i = 0; i < size(); i++){
             for(int j = 0; j < size(); j++){
@@ -229,40 +237,6 @@ public class Board implements Parcelable {
             }
         }
         return true;
-    }
-
-    @Override
-    public String toString(){
-        String boardString = "";
-        if(board == null){
-            return "Board is null";
-        }
-        for(int i = 0; i < board[0].length; i++){
-            for(int j = 0; j < board.length; j++){
-                Location place = board[i][j];
-                Ship ghost = place.getShip();
-
-                if(ghost != null){
-                    String shipType = ghost.getName();
-                    if(shipType.contains("aircraftcarrier"))
-                        boardString += "5";
-                    else if(shipType.contains("battleship"))
-                        boardString += "4";
-                    else if(shipType.contains("submarine"))
-                        boardString += "3";
-                    else if(shipType.contains("frigate"))
-                        boardString += "2";
-                    else //Sweeper
-                        boardString += "1";
-                }
-                //empty place
-                else{
-                    boardString += "0";
-                }
-            }
-        }
-
-        return boardString;
     }
 
 

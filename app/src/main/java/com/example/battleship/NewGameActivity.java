@@ -38,7 +38,7 @@ public class NewGameActivity extends AppCompatActivity {
     final private int PLAYER2_TURN = 2;
     private BoardView boardView;
     public static Board playerBoard, player1Board, player2Board;
-    private ShipView shipBeingDragged = null;
+    private ShipView shipDragged = null;
     private List<ShipView> fleetView = new LinkedList<>();
     private Button shipsPlaced;
     private TextView player1name, player2name;
@@ -187,6 +187,7 @@ public class NewGameActivity extends AppCompatActivity {
                     i.putExtra("board", playerBoard);
                     i.putExtra("roomName", roomName);
                     startActivity(i);
+                    finish();
                 }
             }
 
@@ -241,12 +242,13 @@ public class NewGameActivity extends AppCompatActivity {
 
     }
 
-
+    //how to drag and place ship
     public void setBoardDragListener(final BoardView boardView, final Board board) {
         boardView.setOnDragListener(new View.OnDragListener() {
             @Override
-            public boolean onDrag(View v, DragEvent event) {
-                switch (event.getAction()) {
+            public boolean onDrag(View v, DragEvent ship) {
+                //most cases do not matter until drop (youtube tutorial help)
+                switch (ship.getAction()) {
                     case DragEvent.ACTION_DRAG_STARTED:
                         break;
 
@@ -264,19 +266,19 @@ public class NewGameActivity extends AppCompatActivity {
 
                     case DragEvent.ACTION_DROP:
 
-
-                        float x = event.getX();
-                        float y = event.getY();
+                        //variables that matter on drop
+                        float x = ship.getX();
+                        float y = ship.getY();
                         int width;
                         int height;
 
-                        if (!shipBeingDragged.getShip().getDir()) {
-                            width = shipBeingDragged.getShipImage().getHeight();
-                            height = shipBeingDragged.getShipImage().getWidth();
+                        if (!shipDragged.getShip().getDir()) {
+                            width = shipDragged.getShipImage().getHeight();
+                            height = shipDragged.getShipImage().getWidth();
 
                         } else {
-                            width = shipBeingDragged.getShipImage().getWidth();
-                            height = shipBeingDragged.getShipImage().getHeight();
+                            width = shipDragged.getShipImage().getWidth();
+                            height = shipDragged.getShipImage().getHeight();
                         }
 
                         //x and y coordinates of top-left of image, relative to the board
@@ -290,17 +292,17 @@ public class NewGameActivity extends AppCompatActivity {
                         int xGrid = xy / 100;
                         int yGrid = xy % 100;
 
-                        if (!board.placeShip(shipBeingDragged.getShip(), xGrid, yGrid, shipBeingDragged.getShip().getDir())) {
+                        if (!board.placeShip(shipDragged.getShip(), xGrid, yGrid, shipDragged.getShip().getDir())) {
                             return true;
                         }
 
-                        if (!shipBeingDragged.getShip().getDir()) {
-                            shipBeingDragged.getShipImage().setX(v.getX() + (xGrid * (v.getWidth() / 10)) - (height / 2) + (width / 2));
-                            shipBeingDragged.getShipImage().setY(v.getY() + (yGrid * (v.getHeight() / 10)) + (height / 2) - (width / 2));
+                        if (!shipDragged.getShip().getDir()) {
+                            shipDragged.getShipImage().setX(v.getX() + (xGrid * (v.getWidth() / 10)) - (height / 2) + (width / 2));
+                            shipDragged.getShipImage().setY(v.getY() + (yGrid * (v.getHeight() / 10)) + (height / 2) - (width / 2));
 
                         } else {
-                            shipBeingDragged.getShipImage().setX(v.getX() + (xGrid * (v.getWidth() / 10)));
-                            shipBeingDragged.getShipImage().setY(v.getY() + (yGrid * (v.getHeight() / 10)));
+                            shipDragged.getShipImage().setX(v.getX() + (xGrid * (v.getWidth() / 10)));
+                            shipDragged.getShipImage().setY(v.getY() + (yGrid * (v.getHeight() / 10)));
                         }
 
 
@@ -368,8 +370,7 @@ public class NewGameActivity extends AppCompatActivity {
                     };
 
                     image.startDrag(data, shadowBuilder, image, 0);
-                    //image.setVisibility(View.INVISIBLE);
-                    shipBeingDragged = shipView;
+                    shipDragged = shipView;
                     deselectAllShipViews();
                     select(shipView);
 
@@ -477,12 +478,6 @@ public class NewGameActivity extends AppCompatActivity {
         setTouchListener(shipView);
     }
 
-    public void startGameTapped(View v){
-//        donePlacingShips = true;
-//        Intent i = new Intent(getApplicationContext(), gamePlay.class);
-//        startActivity(i);
-
-    }
 
 
 
