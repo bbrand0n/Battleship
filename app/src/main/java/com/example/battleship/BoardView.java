@@ -128,7 +128,7 @@ public class BoardView extends View {
         if(displayShips){
             drawShips(canvas);
         }
-        drawShipHitPlaces(canvas);
+        //drawShipHitPlaces(canvas);
 
         //0000000000000000000000000000000000000000000000000000000000000000000000000000000
         paintMarker.setStyle(Paint.Style.STROKE);
@@ -177,17 +177,6 @@ public class BoardView extends View {
         canvas.drawRect((tileSize* x) + offSet, (tileSize*y) + offSet, ((tileSize * x)+tileSize) - offSet, (((viewSize/10) * y)+tileSize) - offSet, boardPaint);
     }
 
-    //draw a square over hits
-    public void drawShipHitPlaces(Canvas canvas){
-        if(board == null){
-            return;
-        }
-        List<Location> shipHitPlaces = board.getShipHitPlaces();
-        for(Location places : shipHitPlaces){
-            drawSquare(canvas, Color.GREEN, places.getX(), places.getY());
-        }
-
-    }
 
     //draw horizontal and vertical grid lines
     private void drawGrid(Canvas canvas) {
@@ -272,7 +261,6 @@ public class BoardView extends View {
             if ((row < 1) || (row > 10)){return false;}
             if ((col < 1) || (col > 10)){return false;}
 
-            //MainActivity.pObj.shotsFired++;
 
             System.out.println("click: " + row + "," + col + " width: " + w);
 
