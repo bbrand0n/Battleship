@@ -27,7 +27,6 @@ public class ShipView {
         isSelected = selected;
     }
 
-
     ImageView getShipImage(){
         return shipImage;
     }

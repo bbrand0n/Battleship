@@ -11,7 +11,7 @@ public class Ship  {
     private int size;
 
     //if ture then the ship would be horizontal, vertical if false
-    private boolean dir = true;
+    private boolean direction = true;
 
     //list of coordinates/locations of ships placed
     public List<Location> placed = new ArrayList<>();
@@ -40,16 +40,13 @@ public class Ship  {
     }
 
     //change ship direction
-    void setDir(boolean newDir){
-        dir = newDir;
+    void setDirection(boolean newDir){
+        direction = newDir;
     }
-    boolean getDir(){
-        return dir;
+    boolean getDirection(){
+        return direction;
     }
 
-    List<Location> getPlacement(){
-        return placed;
-    }
 
     //TODO places should also remove the ship?
     void removeShip(){

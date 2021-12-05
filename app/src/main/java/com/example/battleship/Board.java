@@ -13,19 +13,31 @@ public class Board implements Parcelable {
     private Location[][] board = null;
 
     //where ship has been shot
-    private int placesShot = 0;
+   private int shipHits = 0;
 
 
     public Board(int size) {
         this.size = size;
         board = new Location[size()][size()];
-        createBoard(board);
+
+        //creation of board
+        for(int y = 0; y < board.length; y++){
+            for(int x = 0; x < board[0].length; x++){
+                board[y][x] = new Location(x, y);
+            }
+        }
     }
 
     public Board(int size, List<Integer> opX, List<Integer> opY){
         this.size = size;
+
+        //creation of board
         board = new Location[size()][size()];
-        createBoard(board);
+        for(int y = 0; y < board.length; y++){
+            for(int x = 0; x < board[0].length; x++){
+                board[y][x] = new Location(x, y);
+            }
+        }
 
         for(int x : opX) {
             for(int y : opY) {
@@ -41,7 +53,7 @@ public class Board implements Parcelable {
 
     protected Board(Parcel in) {
         size = in.readInt();
-        placesShot = in.readInt();
+        shipHits = in.readInt();
     }
 
     public static final Creator<Board> CREATOR = new Creator<Board>() {
@@ -56,19 +68,9 @@ public class Board implements Parcelable {
         }
     };
 
-    //create board and initialize array
-    private void createBoard(Location[][] board){
-
-        for(int y = 0; y < board.length; y++){
-            for(int x = 0; x < board[0].length; x++){
-                board[y][x] = new Location(x, y);
-            }
-        }
-    }
-
 
     //place ship
-    boolean placeShip(Ship ship, int x, int y, boolean dir){
+    boolean placeShip(Ship ship, int x, int y, boolean direction){
         if(ship == null){
             return false;
         }
@@ -80,7 +82,7 @@ public class Board implements Parcelable {
 
 
         for(int i = 0; i < ship.getSize(); i++){
-            if(dir){
+            if(direction){
                 //horizontal
                 place = placeAt(x+i, y);
             }
@@ -88,20 +90,9 @@ public class Board implements Parcelable {
                 //ship is vertical
                 place = placeAt(x, y+i);
             }
-
-            if(place == null || place.hasShip()) {
-                return false;
-            }
-            shipPlaces.add(place);
-
         }
 
-
-        for(Location placeWithShip: shipPlaces){
-            placeWithShip.setShip(ship);
-        }
-
-        ship.setDir(dir);
+        ship.setDirection(direction);
         ship.placeShip(shipPlaces);
 
         // 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -132,7 +123,6 @@ public class Board implements Parcelable {
             for(int j = 0; j < board[0].length; j++){
                 if(board[i][j].hasShip(ship)){
 
-                    // 000000000000000000000000000000000000000000000000000000000000000000000000
                     for (int k = 0; k < gamePlay.spX.size(); k++)
                     {
                         int bx = gamePlay.spX.get(k);
@@ -144,13 +134,9 @@ public class Board implements Parcelable {
                             break;
                         }
                     }
-                    //000000000000000000000000000000000000000000000000000000000000000000000000000
-
-                    board[i][j].removeShip();
                 }
             }
         }
-        ship.removeShip();
     }
 
 
@@ -177,23 +163,9 @@ public class Board implements Parcelable {
     List<Location> getShipHitPlaces() {
 
         List<Location> shipHitPlaces = new ArrayList<Location>();
-
         return shipHitPlaces;
     }
 
-    
-
-    //true if all ships are hit
-    boolean isAllHit(){
-        for(int i = 0; i < size(); i++){
-            for(int j = 0; j < size(); j++){
-                if(!board[i][j].isHit()){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
 
     @Override
@@ -204,6 +176,6 @@ public class Board implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(size);
-        dest.writeInt(placesShot);
+        dest.writeInt(shipHits);
     }
 }

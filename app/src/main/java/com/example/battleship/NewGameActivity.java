@@ -272,7 +272,7 @@ public class NewGameActivity extends AppCompatActivity {
                         int width;
                         int height;
 
-                        if (!shipDragged.getShip().getDir()) {
+                        if (!shipDragged.getShip().getDirection()) {
                             width = shipDragged.getShipImage().getHeight();
                             height = shipDragged.getShipImage().getWidth();
 
@@ -292,11 +292,11 @@ public class NewGameActivity extends AppCompatActivity {
                         int xGrid = xy / 100;
                         int yGrid = xy % 100;
 
-                        if (!board.placeShip(shipDragged.getShip(), xGrid, yGrid, shipDragged.getShip().getDir())) {
+                        if (!board.placeShip(shipDragged.getShip(), xGrid, yGrid, shipDragged.getShip().getDirection())) {
                             return true;
                         }
 
-                        if (!shipDragged.getShip().getDir()) {
+                        if (!shipDragged.getShip().getDirection()) {
                             shipDragged.getShipImage().setX(v.getX() + (xGrid * (v.getWidth() / 10)) - (height / 2) + (width / 2));
                             shipDragged.getShipImage().setY(v.getY() + (yGrid * (v.getHeight() / 10)) + (height / 2) - (width / 2));
 
@@ -396,9 +396,6 @@ public class NewGameActivity extends AppCompatActivity {
 
 
         if (shipToRotate.getShip() != null) {
-            for (Location place : shipToRotate.getShip().getPlacement()) {
-                place.setShip(null);
-            }
             shipToRotate.getShip().removeShip();
         }
 
@@ -421,12 +418,12 @@ public class NewGameActivity extends AppCompatActivity {
 
     //rotate ship
     private void rotateShip(ShipView shipToRotate) {
-        if (shipToRotate.getShip().getDir()) {
+        if (shipToRotate.getShip().getDirection()) {
             shipToRotate.getShipImage().setRotation(90);
-            shipToRotate.getShip().setDir(false);
+            shipToRotate.getShip().setDirection(false);
         } else {
             shipToRotate.getShipImage().setRotation(0);
-            shipToRotate.getShip().setDir(true);
+            shipToRotate.getShip().setDirection(true);
         }
     }
 
