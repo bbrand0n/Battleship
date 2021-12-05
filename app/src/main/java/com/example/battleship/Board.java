@@ -11,7 +11,6 @@ public class Board implements Parcelable {
 
     public int size;
     private Location[][] board = null;
-    //public List<Location>sp;
 
     //where ship has been shot
     private int placesShot = 0;
@@ -38,7 +37,6 @@ public class Board implements Parcelable {
 
 
     }
-
 
 
     protected Board(Parcel in) {
@@ -69,13 +67,8 @@ public class Board implements Parcelable {
     }
 
 
-
-
-
-
     //place ship
     boolean placeShip(Ship ship, int x, int y, boolean dir){
-
         if(ship == null){
             return false;
         }
@@ -85,10 +78,10 @@ public class Board implements Parcelable {
         List<Location> shipPlaces = new ArrayList<Location>();
         Location place;
 
-        //Goes through places where ship will be placed.
+
         for(int i = 0; i < ship.getSize(); i++){
             if(dir){
-                //if direction is true, then ship is horizontal
+                //horizontal
                 place = placeAt(x+i, y);
             }
             else{
@@ -96,12 +89,9 @@ public class Board implements Parcelable {
                 place = placeAt(x, y+i);
             }
 
-            //If place was invalid or already had a ship, returns false and doesn't place ship
             if(place == null || place.hasShip()) {
                 return false;
             }
-
-            //If was a valid place then adds to list of places, and looks through other places
             shipPlaces.add(place);
 
         }
@@ -172,30 +162,12 @@ public class Board implements Parcelable {
         return board[y][x];
     }
 
-    //hits coordinate given by player
-    boolean hit(int x, int y){
-        Location placeToHit = new Location(x, y);
-        if(placeToHit == null){
-            return false;
-        }
-        //If place hasn't been hit before, then hits the place.
-        if(!placeToHit.isHit()){
-            placesShot++;
-            placeToHit.hit();
-            return true;
-        }
-        return false;
-    }
 
     //returns true if out of bounds
     boolean isOutOfBounds(int x, int y){
         return x >= size() || y >= size() || x < 0 || y < 0;
     }
 
-    //amount of times board has been hot
-    int numOfShots(){
-        return placesShot;
-    }
     int size() {
         return size;
     }
@@ -204,27 +176,11 @@ public class Board implements Parcelable {
     //return places that have a ship and are hit
     List<Location> getShipHitPlaces() {
 
-        List<Location> boardPlaces = getPlaces();
         List<Location> shipHitPlaces = new ArrayList<Location>();
 
-        for (Location place : boardPlaces) {
-            if (place.isHit() && place.hasShip()) {
-                shipHitPlaces.add(place);
-            }
-        }
         return shipHitPlaces;
     }
 
-    //returns the locations of the ships on the board
-    private List<Location> getPlaces(){
-        List<Location> boardPlaces = new LinkedList<Location>();
-        for(int i = 0; i < size(); i++){
-            for(int j = 0; j < size(); j++){
-                boardPlaces.add(board[i][j]);
-            }
-        }
-        return boardPlaces;
-    }
     
 
     //true if all ships are hit

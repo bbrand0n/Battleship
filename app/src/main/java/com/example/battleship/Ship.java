@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Ship implements Serializable {
+public class Ship  {
 
     //attributes of ship
     public String name;
@@ -46,12 +46,6 @@ public class Ship implements Serializable {
     boolean getDir(){
         return dir;
     }
-
-    //return true when ship is on board
-    boolean isPlaced(){
-        return !placed.isEmpty();
-    }
-
 
     List<Location> getPlacement(){
         return placed;

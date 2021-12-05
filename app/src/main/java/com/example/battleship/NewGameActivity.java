@@ -322,15 +322,12 @@ public class NewGameActivity extends AppCompatActivity {
             if (ship.getShip() == null) {
                 return false;
             }
-
-            if (!ship.getShip().isPlaced()) {
-                return false;
-            }
         }
         return true;
     }
 
 
+    //followed through tutorial
     private void setTouchListener(ShipView shipView) {
         ImageView image = shipView.getShipImage();
 
